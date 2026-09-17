@@ -1,0 +1,23 @@
+# Revenue Leakage Defender: Backend Dependencies
+
+# Core framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# Orchestrazione AI
+langgraph==0.2.28
+
+# LLM Provider: Google Gemini (SDK diretto, senza LangChain)
+google-genai>=1.0.0
+
+# Data validation
+# Nota: non piniamo la patch version per compatibilità con Python 3.14
+pydantic>=2.9
+pydantic-settings>=2.5
+
+# PDF Parsing
+pdfplumber==0.11.4
+
+# Utilities
+python-multipart==0.0.12   # FastAPI file uploads
+python-dotenv==1.0.1
