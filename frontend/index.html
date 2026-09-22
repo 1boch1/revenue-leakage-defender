@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Leakage Defender: Verifica conformità fatture</title>
+    <meta name="description" content="Confronto tra fatture fornitore e contratti quadro: discrepanze, importi contestabili e bozza di contestazione.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <span class="brand-name">Revenue Leakage Defender</span>
+                <span class="brand-sub">Verifica fatture / contratti</span>
+            </div>
+            <div class="topbar-status">
+                <span class="status" id="api-status-badge">
+                    <span class="dot" id="status-dot" aria-hidden="true"></span>
+                    <span id="status-text">Verifica connessione…</span>
+                </span>
+                <span class="status muted" id="llm-mode-badge" hidden>
+                    <span id="llm-mode-text">n/d</span>
+                </span>
+                <a class="doc-link" href="/docs/guida-codice.html" target="_blank" rel="noopener">Documentazione tecnica</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="page-head">
+            <h1>Verifica conformità fattura</h1>
+            <p class="lede">Carica la fattura e il contratto quadro in PDF. Il sistema confronta importi, tariffe e condizioni, e restituisce le discrepanze con una bozza di contestazione.</p>
+            <p class="meta">Elaborazione stateless in memoria. Nessun file conservato. Nessun invio automatico.</p>
+        </section>
+
+        <!-- Input -->
+        <section class="card" id="upload-card" aria-labelledby="input-title">
+            <h2 id="input-title">1. Documenti di input</h2>
+
+            <div class="input-grid">
+                <div class="field">
+                    <label class="field-label" for="input-invoice">Fattura fornitore (PDF)</label>
+                    <div class="dropzone" id="dropzone-invoice" role="button" tabindex="0" aria-describedby="hint-invoice">
+                        <span class="dz-title">Trascina il file qui oppure selezionalo</span>
+                        <span class="dz-hint" id="hint-invoice">Solo PDF, max 10 MB</span>
+                        <input type="file" id="input-invoice" class="file-input" accept="application/pdf">
+                    </div>
+                    <div class="file-meta" id="preview-invoice" hidden>
+                        <span class="file-name" id="name-invoice">n/d</span>
+                        <span class="file-size" id="size-invoice">n/d</span>
+                        <button type="button" class="link-btn" id="btn-remove-invoice">Rimuovi</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="input-contract">Contratto quadro (PDF)</label>
+                    <div class="dropzone" id="dropzone-contract" role="button" tabindex="0" aria-describedby="hint-contract">
+                        <span class="dz-title">Trascina il file qui oppure selezionalo</span>
+                        <span class="dz-hint" id="hint-contract">Solo PDF, max 10 MB</span>
+                        <input type="file" id="input-contract" class="file-input" accept="application/pdf">
+                    </div>
+                    <div class="file-meta" id="preview-contract" hidden>
+                        <span class="file-name" id="name-contract">n/d</span>
+                        <span class="file-size" id="size-contract">n/d</span>
+                        <button type="button" class="link-btn" id="btn-remove-contract">Rimuovi</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn secondary" id="btn-quick-demo">Carica dati di esempio</button>
+                <button type="button" class="btn primary" id="btn-start-analysis" disabled>Avvia analisi</button>
+            </div>
+            <p class="form-error" id="form-error" role="alert" hidden></p>
+        </section>
+
+        <!-- Progress -->
+        <section class="card" id="stepper-section" hidden aria-labelledby="progress-title" aria-live="polite">
+            <div class="row-between">
+                <h2 id="progress-title">2. Analisi in corso</h2>
+                <span class="timer" id="stepper-timer">0,0 s</span>
+            </div>
+            <ol class="steps">
+                <li class="step" id="step-item-1"><span class="step-n">1</span> Parsing PDF</li>
+                <li class="step" id="step-item-2"><span class="step-n">2</span> Estrazione dati</li>
+                <li class="step" id="step-item-3"><span class="step-n">3</span> Confronto importi</li>
+                <li class="step" id="step-item-4"><span class="step-n">4</span> Valutazione clausole</li>
+                <li class="step" id="step-item-5"><span class="step-n">5</span> Report</li>
+            </ol>
+            <div class="log" id="live-trace-console" aria-label="Log di avanzamento">
+                <div class="log-head">
+                    <span>Log esecuzione</span>
+                    <span class="log-live">streaming</span>
+                </div>
+                <div class="log-body" id="trace-body"></div>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <section id="results-section" hidden aria-labelledby="results-title">
+            <div class="result" id="result-banner">
+                <div>
+                    <h2 id="results-title"><span id="banner-title">Esito verifica</span></h2>
+                    <p class="result-desc" id="banner-desc"></p>
+                </div>
+                <span class="result-status" id="status-tag">n/d</span>
+            </div>
+            <!-- Riepilogo -->
+
+            <section class="card" aria-label="Sintesi">
+                <h2>3. Sintesi</h2>
+                <dl class="kpi">
+                    <div>
+                        <dt>Importo contestabile</dt>
+                        <dd class="num" id="kpi-overbilling">n/d</dd>
+                    </div>
+                    <div>
+                        <dt>Fattura</dt>
+                        <dd id="kpi-invoice-id">n/d</dd>
+                    </div>
+                    <div>
+                        <dt>Contratto</dt>
+                        <dd id="kpi-contract-id">n/d</dd>
+                    </div>
+                    <div>
+                        <dt>Discrepanze</dt>
+                        <dd class="num" id="kpi-count">n/d</dd>
+                        <dd class="sub" id="kpi-time">n/d</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="card" id="discrepancies-container" aria-labelledby="disc-title">
+                <div class="row-between wrap">
+                    <h2 id="disc-title">Discrepanze rilevate</h2>
+                    <div class="filters" role="group" aria-label="Filtra per severità">
+                        <button type="button" class="filter-btn active" data-filter="all" id="filter-all">Tutte (<span id="count-all">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="high" id="filter-high">Alta (<span id="count-high">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="medium" id="filter-medium">Media (<span id="count-medium">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="low" id="filter-low">Bassa (<span id="count-low">0</span>)</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="table" id="discrepancies-list">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Voce</th>
+                                <th scope="col">Fattura</th>
+                                <th scope="col">Atteso da contratto</th>
+                                <th scope="col">Scostamento</th>
+                                <th scope="col">Severità</th>
+                                <th scope="col">Valutazione</th>
+                            </tr>
+                        </thead>
+                        <tbody id="discrepancies-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <p class="empty" id="discrepancies-empty" hidden>Nessuna discrepanza. Importi e condizioni risultano conformi al contratto.</p>
+            </section>
+
+            <section class="card" id="email-section" aria-labelledby="email-title">
+                <div class="row-between wrap">
+                    <h2 id="email-title">Bozza di contestazione</h2>
+                    <button type="button" class="btn secondary" id="btn-copy-email">Copia testo</button>
+                </div>
+                <p class="meta" id="email-subject"></p>
+                <pre class="email-body" id="email-body"></pre>
+            </section>
+
+            <div class="actions">
+                <button type="button" class="btn secondary" id="btn-reset-analysis">Nuova analisi</button>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="toasts" id="toast-container" aria-live="polite"></div>
+
+    <footer>
+        <div class="container">
+            <p>Revenue Leakage Defender: strumento di verifica fatture/contratti. Uso interno, con revisione umana obbligatoria prima di qualsiasi contestazione.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
