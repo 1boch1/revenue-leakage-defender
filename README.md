@@ -1,6 +1,6 @@
 # Revenue Leakage Defender
 
-Agente GenAI per la verifica di conformita tra fatture fornitore e contratti quadro.
+Agente GenAI per la verifica di conformità tra fatture fornitore e contratti quadro.
 Confronta righe fattura e clausole contrattuali con una pipeline ibrida
 deterministica/probabilistica orchestrata con LangGraph.
 
@@ -17,7 +17,7 @@ deterministica/probabilistica orchestrata con LangGraph.
 ## Problema
 
 La verifica manuale delle fatture fornitore contro i contratti quadro (MSA)
-e lenta e campionaria. Errori tariffari, totali riga errati e termini di
+è lenta e campionaria. Errori tariffari, totali riga errati e termini di
 pagamento non conformi generano sovrafatturazione. Questo progetto automatizza
 il ciclo: estrae clausole e righe fattura, calcola le discrepanze numeriche e
 valuta le motivazioni contrattuali, producendo un report e una bozza di email
@@ -105,7 +105,7 @@ PYTHONPATH=backend pytest -v backend/tests/
 
 - `Field(description=...)` Pydantic: documentazione e guida per lo structured output LLM.
 - Inversione delle dipendenze: i nodi dipendono da `BaseLLMProvider`.
-- Validazione cross-field (`model_validator`): `APPROVED` non puo contenere discrepanze.
+- Validazione cross-field (`model_validator`): `APPROVED` non può contenere discrepanze.
 - Edge condizionale: con zero discrepanze si salta il reasoning LLM.
 - Zero disk I/O per i PDF in input.
 

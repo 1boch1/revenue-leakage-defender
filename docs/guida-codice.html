@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manuale di studio: Revenue Leakage Defender</title>
-    <meta name="description" content="Manuale tecnico: architettura, moduli, flusso dati, test, frontend ed estensioni.">
+    <meta name="description"
+        content="Manuale tecnico: architettura, moduli, flusso dati, test, frontend ed estensioni.">
     <style>
         :root {
             --bg: #f6f7f9;
@@ -28,7 +30,9 @@
             --max: 960px;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -49,6 +53,7 @@
             background: var(--surface);
             border-bottom: 1px solid var(--border);
         }
+
         .topbar-inner {
             display: flex;
             justify-content: space-between;
@@ -58,8 +63,18 @@
             padding-bottom: 12px;
             flex-wrap: wrap;
         }
-        .brand-name { font-weight: 650; font-size: 15px; display: block; }
-        .brand-sub { font-size: 12.5px; color: var(--text-3); }
+
+        .brand-name {
+            font-weight: 650;
+            font-size: 15px;
+            display: block;
+        }
+
+        .brand-sub {
+            font-size: 12.5px;
+            color: var(--text-3);
+        }
+
         .topbar-status {
             display: flex;
             align-items: center;
@@ -68,10 +83,19 @@
             color: var(--text-2);
             flex-wrap: wrap;
         }
-        .doc-link { color: var(--text-2); }
-        .doc-link:hover { color: var(--text); }
 
-        .page-head { padding: 28px 0 4px; }
+        .doc-link {
+            color: var(--text-2);
+        }
+
+        .doc-link:hover {
+            color: var(--text);
+        }
+
+        .page-head {
+            padding: 28px 0 4px;
+        }
+
         .page-head h1 {
             font-size: 24px;
             line-height: 1.25;
@@ -79,8 +103,18 @@
             margin: 0 0 8px;
             font-weight: 650;
         }
-        .lede { margin: 0 0 6px; color: var(--text-2); max-width: 62ch; }
-        .meta { margin: 0; font-size: 13px; color: var(--text-3); }
+
+        .lede {
+            margin: 0 0 6px;
+            color: var(--text-2);
+            max-width: 62ch;
+        }
+
+        .meta {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-3);
+        }
 
         .toc {
             background: var(--surface);
@@ -91,11 +125,33 @@
             columns: 2;
             column-gap: 32px;
         }
-        @media (max-width: 680px) { .toc { columns: 1; } }
-        .toc ol { margin: 0; padding-left: 20px; font-size: 14px; }
-        .toc li { margin: 3px 0; break-inside: avoid; }
-        .toc a { color: var(--text-2); text-decoration: none; }
-        .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+        @media (max-width: 680px) {
+            .toc {
+                columns: 1;
+            }
+        }
+
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+        }
+
+        .toc li {
+            margin: 3px 0;
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: var(--text-2);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
 
         .card {
             background: var(--surface);
@@ -104,32 +160,53 @@
             padding: 20px;
             margin-top: 16px;
         }
+
         .card h2 {
             font-size: 16px;
             font-weight: 650;
             margin: 0 0 6px;
         }
+
         .card h3 {
             font-size: 14px;
             font-weight: 650;
             margin: 20px 0 6px;
         }
+
         .card h4 {
             font-size: 13.5px;
             font-weight: 650;
             margin: 16px 0 4px;
             color: var(--text);
         }
-        .card p { margin: 8px 0; color: var(--text-2); font-size: 14.5px; }
+
+        .card p {
+            margin: 8px 0;
+            color: var(--text-2);
+            font-size: 14.5px;
+        }
+
         .card p.file {
             font-family: var(--mono);
             font-size: 12.5px;
             color: var(--text-3);
             margin: 0 0 8px;
         }
-        .card ul, .card ol { color: var(--text-2); font-size: 14.5px; margin: 8px 0; padding-left: 22px; }
-        .card li { margin: 4px 0; }
-        .card code, .toc code {
+
+        .card ul,
+        .card ol {
+            color: var(--text-2);
+            font-size: 14.5px;
+            margin: 8px 0;
+            padding-left: 22px;
+        }
+
+        .card li {
+            margin: 4px 0;
+        }
+
+        .card code,
+        .toc code {
             font-family: var(--mono);
             font-size: 12.5px;
             background: #eef1f5;
@@ -138,6 +215,7 @@
             padding: 1px 5px;
             white-space: nowrap;
         }
+
         .step-n {
             font-family: var(--mono);
             font-size: 12px;
@@ -165,6 +243,7 @@
             overflow-x: auto;
             margin: 10px 0 0;
         }
+
         pre code {
             background: none !important;
             border: none !important;
@@ -183,18 +262,35 @@
             font-size: 14px;
             color: var(--text-2);
         }
-        .callout strong { color: var(--text); }
-        .callout.warn { border-left-color: var(--danger); }
 
-        .table-wrap { overflow-x: auto; margin-top: 8px; }
-        .table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-        .table th, .table td {
+        .callout strong {
+            color: var(--text);
+        }
+
+        .callout.warn {
+            border-left-color: var(--danger);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        .table th,
+        .table td {
             text-align: left;
             padding: 9px 10px;
             border-bottom: 1px solid var(--border);
             vertical-align: top;
             color: var(--text-2);
         }
+
         .table thead th {
             font-size: 12px;
             font-weight: 600;
@@ -203,10 +299,22 @@
             letter-spacing: 0.04em;
             white-space: nowrap;
         }
-        .table tbody tr:last-child td { border-bottom: none; }
-        .table td:first-child { font-family: var(--mono); font-size: 12.5px; }
 
-        .stages { list-style: none; margin: 8px 0 0; padding: 0; }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table td:first-child {
+            font-family: var(--mono);
+            font-size: 12.5px;
+        }
+
+        .stages {
+            list-style: none;
+            margin: 8px 0 0;
+            padding: 0;
+        }
+
         .stages li {
             display: flex;
             gap: 10px;
@@ -216,7 +324,11 @@
             font-size: 14.5px;
             color: var(--text-2);
         }
-        .stages li:last-child { border-bottom: none; }
+
+        .stages li:last-child {
+            border-bottom: none;
+        }
+
         .stages code {
             font-family: var(--mono);
             font-size: 12.5px;
@@ -231,9 +343,13 @@
             font-size: 12.5px;
             color: var(--text-3);
         }
-        footer p { margin: 0; }
+
+        footer p {
+            margin: 0;
+        }
     </style>
 </head>
+
 <body>
 
     <header class="topbar">
@@ -252,8 +368,11 @@
 
         <section class="page-head">
             <h1>Manuale di studio</h1>
-            <p class="lede">Dal problema al codice: come il sistema confronta fatture e contratti, perche ogni modulo esiste, come i dati fluiscono nodo per nodo e come estendere il progetto. Gli estratti corrispondono al codice corrente nel repository.</p>
-            <p class="meta">Backend: <code>backend/</code> · Frontend: <code>frontend/</code> · 6 nodi LangGraph · 14 test</p>
+            <p class="lede">Dal problema al codice: come il sistema confronta fatture e contratti, perché ogni modulo
+                esiste, come i dati fluiscono nodo per nodo e come estendere il progetto. Gli estratti corrispondono al
+                codice corrente nel repository.</p>
+            <p class="meta">Backend: <code>backend/</code> · Frontend: <code>frontend/</code> · 6 nodi LangGraph · 14
+                test</p>
         </section>
 
         <nav class="toc" aria-label="Indice">
@@ -269,7 +388,7 @@
                 <li><a href="#provider">LLM provider (<code>llm_provider.py</code>)</a></li>
                 <li><a href="#mock">Mock provider (<code>mock_provider.py</code>)</a></li>
                 <li><a href="#prompts">Prompt (<code>prompts.py</code>)</a></li>
-                <li><a href="#nodes">Nodi, controlli e severita (<code>nodes.py</code>)</a></li>
+                <li><a href="#nodes">Nodi, controlli e severità (<code>nodes.py</code>)</a></li>
                 <li><a href="#workflow">Grafo e routing (<code>workflow.py</code>)</a></li>
                 <li><a href="#main">API FastAPI e SSE (<code>main.py</code>)</a></li>
                 <li><a href="#test">Test e fixture</a></li>
@@ -293,25 +412,33 @@
                 <li>Sezioni 12–14: API, streaming, test, CLI.</li>
                 <li>Sezioni 15–17: frontend, estensioni, errori.</li>
             </ol>
-            <div class="callout"><strong>Prerequisiti.</strong> Python 3.11+, basi di FastAPI e Pydantic, idea di cosa sia un LLM con output strutturato. LangGraph viene spiegato nella sezione 13.</div>
+            <div class="callout"><strong>Prerequisiti.</strong> Python 3.11+, basi di FastAPI e Pydantic, idea di cosa
+                sia un LLM con output strutturato. LangGraph viene spiegato nella sezione 13.</div>
         </section>
 
         <section class="card" id="problema">
             <h2><span class="step-n">2</span>Il problema e l'idea centrale</h2>
-            <p>Un'azienda riceve fatture che dovrebbero rispettare un contratto quadro (MSA): tariffe massime per servizio, termini di pagamento, regole di adeguamento. La verifica manuale e lenta e campionaria; gli scostamenti - tariffa sopra il massimale, totali riga errati, subtotali incoerenti, termini piu restrittivi - diventano sovrafatturazione pagata per errore.</p>
-            <p>L'idea centrale del progetto e la <strong>separazione dei compiti</strong>:</p>
+            <p>Un'azienda riceve fatture che dovrebbero rispettare un contratto quadro (MSA): tariffe massime per
+                servizio, termini di pagamento, regole di adeguamento. La verifica manuale è lenta e campionaria, gli
+                scostamenti (tariffa sopra il massimale, totali riga errati, subtotali incoerenti, termini più
+                restrittivi) diventano sovrafatturazione pagata per errore.</p>
+            <p>L'idea centrale del progetto è la <strong>separazione dei compiti</strong>:</p>
             <ul>
-                <li><strong>L'LLM fa cio che sa fare:</strong> leggere testo non strutturato (PDF) e restituirlo in forma strutturata (JSON conforme a uno schema).</li>
-                <li><strong>Python fa cio che sa fare:</strong> moltiplicazioni, somme e confronti al centesimo, senza allucinazioni.</li>
-                <li><strong>L'LLM torna in gioco</strong> solo per la parte interpretativa: una discrepanza numerica e coperta da qualche clausola (es. adeguamento ISTAT comunicato) oppure e una violazione?</li>
+                <li><strong>L'LLM fa ciò che sa fare:</strong> leggere testo non strutturato (PDF) e restituirlo in
+                    forma strutturata (JSON conforme a uno schema).</li>
+                <li><strong>Python fa ciò che sa fare:</strong> moltiplicazioni, somme e confronti al centesimo, senza
+                    allucinazioni.</li>
+                <li><strong>L'LLM torna in gioco</strong> solo per la parte interpretativa: una discrepanza numerica è
+                    coperta da qualche clausola (es. adeguamento ISTAT comunicato) oppure è una violazione?</li>
             </ul>
-            <div class="callout"><strong>Regola d'oro.</strong> Mai chiedere all'LLM di calcolare. Estrae, Python verifica, l'LLM interpreta. Ogni anomalia architetturale del progetto discende da questa regola.</div>
+            <div class="callout"><strong>Regola d'oro.</strong> Mai chiedere all'LLM di calcolare. Estrae, Python
+                verifica, l'LLM interpreta. Ogni anomalia architetturale del progetto discende da questa regola.</div>
         </section>
 
         <section class="card" id="setup">
             <h2><span class="step-n">3</span>Setup e configurazione</h2>
             <p class="file">backend/requirements.txt · backend/.env.example</p>
-<pre><code>python3 -m venv .venv
+            <pre><code>python3 -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 cp backend/.env.example backend/.env
@@ -321,60 +448,161 @@ python -m uvicorn main:app --reload --port 8000</code></pre>
             <h3>Variabili d'ambiente</h3>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Variabile</th><th>Effetto</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Variabile</th>
+                            <th>Effetto</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>GEMINI_API_KEY</td><td>Se assente o placeholder, il sistema usa MockLLMProvider (modalita offline zero-cost)</td></tr>
-                        <tr><td>GEMINI_MODEL</td><td>Modello Gemini (default gemini-2.5-flash)</td></tr>
-                        <tr><td>LANGCHAIN_TRACING_V2 / LANGCHAIN_API_KEY / LANGCHAIN_PROJECT</td><td>Abilitano il tracing LangSmith, senza modifiche al codice</td></tr>
+                        <tr>
+                            <td>GEMINI_API_KEY</td>
+                            <td>Se assente o placeholder, il sistema usa MockLLMProvider (modalità offline zero-cost)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GEMINI_MODEL</td>
+                            <td>Modello Gemini (default gemini-2.5-flash)</td>
+                        </tr>
+                        <tr>
+                            <td>LANGCHAIN_TRACING_V2 / LANGCHAIN_API_KEY / LANGCHAIN_PROJECT</td>
+                            <td>Abilitano il tracing LangSmith, senza modifiche al codice</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <p>Dipendenze principali: <code>fastapi</code> + <code>uvicorn</code> (API), <code>langgraph</code> (orchestrazione), <code>google-genai</code> (SDK Gemini diretto, senza LangChain), <code>pydantic</code> (schemi), <code>pdfplumber</code> (PDF), <code>python-multipart</code> (upload), <code>python-dotenv</code> (env).</p>
+            <p>Dipendenze principali: <code>fastapi</code> + <code>uvicorn</code> (API), <code>langgraph</code>
+                (orchestrazione), <code>google-genai</code> (SDK Gemini diretto, senza LangChain), <code>pydantic</code>
+                (schemi), <code>pdfplumber</code> (PDF), <code>python-multipart</code> (upload),
+                <code>python-dotenv</code> (env).
+            </p>
         </section>
 
         <section class="card" id="esempio">
             <h2><span class="step-n">4</span>Esempio guidato: la fattura INV-2024-1042</h2>
-            <p>Tutto il manuale ragiona su un unico caso, quello delle fixture di test (<code>backend/tests/fixtures/</code>). Fattura <code>INV-2024-1042</code> di TechConsult S.r.l. contro contratto <code>MSA-2023-ACME-001</code>. Tieni questi numeri a mente: ogni sezione li richiama.</p>
+            <p>Tutto il manuale ragiona su un unico caso, quello delle fixture di test
+                (<code>backend/tests/fixtures/</code>). Fattura <code>INV-2024-1042</code> di TechConsult S.r.l. contro
+                contratto <code>MSA-2023-ACME-001</code>. Tieni questi numeri a mente: ogni sezione li richiama.</p>
             <h3>Righe fattura vs massimali</h3>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Voce</th><th>Qty × prezzo</th><th>Totale esposto</th><th>Max contratto</th><th>Esito</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Voce</th>
+                            <th>Qty × prezzo</th>
+                            <th>Totale esposto</th>
+                            <th>Max contratto</th>
+                            <th>Esito</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>Consulenza Senior</td><td>10 × 600,00 = 6.000,00</td><td>6.000,00</td><td>500,00</td><td>Tariffa oltre il max: (600 − 500) × 10 = 1.000,00</td></tr>
-                        <tr><td>Sviluppo Software</td><td>15 × 450,00 = 6.750,00</td><td>6.750,00</td><td>450,00</td><td>Conforme</td></tr>
-                        <tr><td>Project Management</td><td>5 × 550,00 = 2.750,00</td><td>2.750,00</td><td>550,00</td><td>Conforme</td></tr>
-                        <tr><td>Formazione Team</td><td>3 × 400,00 = 1.200,00</td><td>1.250,00</td><td>400,00 (mock)</td><td>Errore riga: +50,00</td></tr>
+                        <tr>
+                            <td>Consulenza Senior</td>
+                            <td>10 × 600,00 = 6.000,00</td>
+                            <td>6.000,00</td>
+                            <td>500,00</td>
+                            <td>Tariffa oltre il max: (600 − 500) × 10 = 1.000,00</td>
+                        </tr>
+                        <tr>
+                            <td>Sviluppo Software</td>
+                            <td>15 × 450,00 = 6.750,00</td>
+                            <td>6.750,00</td>
+                            <td>450,00</td>
+                            <td>Conforme</td>
+                        </tr>
+                        <tr>
+                            <td>Project Management</td>
+                            <td>5 × 550,00 = 2.750,00</td>
+                            <td>2.750,00</td>
+                            <td>550,00</td>
+                            <td>Conforme</td>
+                        </tr>
+                        <tr>
+                            <td>Formazione Team</td>
+                            <td>3 × 400,00 = 1.200,00</td>
+                            <td>1.250,00</td>
+                            <td>400,00 (mock)</td>
+                            <td>Errore riga: +50,00</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <h3>Totali e termini</h3>
             <ul>
-                <li>Somma righe esposte: 6.000 + 6.750 + 2.750 + 1.250 = <strong>16.750,00</strong>; subtotale dichiarato <strong>16.800,00</strong> → discrepanza subtotale <strong>+50,00</strong>.</li>
-                <li>Totale: 16.800 + 3.696 (IVA) = 20.496 = totale dichiarato → <strong>nessuna discrepanza sul totale</strong> (l'errore del subtotale si propaga in modo coerente: ottimo esempio di perche servono controlli separati).</li>
-                <li>Pagamento: fattura 30 giorni contro 60 a contratto → discrepanza termini, senza delta monetario.</li>
+                <li>Somma righe esposte: 6.000 + 6.750 + 2.750 + 1.250 = <strong>16.750,00</strong>. Subtotale
+                    dichiarato <strong>16.800,00</strong> → discrepanza subtotale <strong>+50,00</strong>.</li>
+                <li>Totale: 16.800 + 3.696 (IVA) = 20.496 = totale dichiarato → <strong>nessuna discrepanza sul
+                        totale</strong> (l'errore del subtotale si propaga in modo coerente: ottimo esempio di perché
+                    servono controlli separati).</li>
+                <li>Pagamento: fattura 30 giorni contro 60 a contratto → discrepanza termini, senza delta monetario.
+                </li>
                 <li>Totale recuperabile: 1.000 + 50 + 50 = <strong>1.100,00</strong> oltre IVA.</li>
             </ul>
-            <div class="callout"><strong>Le 4 discrepanze attese.</strong> <code>unit_price:Consulenza Senior</code> (1.000, severita high), <code>line_total:Formazione Team</code> (50, low), <code>subtotal</code> (50, low), <code>payment_terms_days</code> (nessun delta, medium). Il Mock le restituisce tutte come UNJUSTIFIED.</div>
+            <div class="callout"><strong>Le 4 discrepanze attese.</strong> <code>unit_price:Consulenza Senior</code>
+                (1.000, severità high), <code>line_total:Formazione Team</code> (50, low), <code>subtotal</code> (50,
+                low), <code>payment_terms_days</code> (nessun delta, medium). Il Mock le restituisce tutte come
+                UNJUSTIFIED.</div>
         </section>
 
         <section class="card" id="moduli">
             <h2><span class="step-n">5</span>Mappa dei moduli</h2>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>File</th><th>Responsabilita</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Responsabilita</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>backend/main.py</td><td>FastAPI: endpoint batch, streaming SSE, fixture demo, static mount</td></tr>
-                        <tr><td>backend/run_live_stream.py</td><td>CLI che mostra l'esecuzione nodo per nodo da terminale</td></tr>
-                        <tr><td>backend/models/schemas.py</td><td>Schemi Pydantic: Invoice, ContractTerms, Discrepancy, FinalReport</td></tr>
-                        <tr><td>backend/graph/state.py</td><td>GraphState: TypedDict con aggiornamenti parziali</td></tr>
-                        <tr><td>backend/graph/prompts.py</td><td>System prompt dei nodi LLM</td></tr>
-                        <tr><td>backend/graph/nodes.py</td><td>I 6 nodi esecutivi</td></tr>
-                        <tr><td>backend/graph/workflow.py</td><td>Compilazione StateGraph e routing condizionale</td></tr>
-                        <tr><td>backend/services/llm_provider.py</td><td>BaseLLMProvider, GeminiProvider, factory da env</td></tr>
-                        <tr><td>backend/services/mock_provider.py</td><td>Mock deterministico per test e demo offline</td></tr>
-                        <tr><td>backend/services/pdf_parser.py</td><td>Estrazione testo PDF in memoria</td></tr>
-                        <tr><td>backend/tests/</td><td>4 file di test, generatore fixture PDF, demo CLI</td></tr>
-                        <tr><td>frontend/</td><td>index.html, css/style.css, js/app.js</td></tr>
+                        <tr>
+                            <td>backend/main.py</td>
+                            <td>FastAPI: endpoint batch, streaming SSE, fixture demo, static mount</td>
+                        </tr>
+                        <tr>
+                            <td>backend/run_live_stream.py</td>
+                            <td>CLI che mostra l'esecuzione nodo per nodo da terminale</td>
+                        </tr>
+                        <tr>
+                            <td>backend/models/schemas.py</td>
+                            <td>Schemi Pydantic: Invoice, ContractTerms, Discrepancy, FinalReport</td>
+                        </tr>
+                        <tr>
+                            <td>backend/graph/state.py</td>
+                            <td>GraphState: TypedDict con aggiornamenti parziali</td>
+                        </tr>
+                        <tr>
+                            <td>backend/graph/prompts.py</td>
+                            <td>System prompt dei nodi LLM</td>
+                        </tr>
+                        <tr>
+                            <td>backend/graph/nodes.py</td>
+                            <td>I 6 nodi esecutivi</td>
+                        </tr>
+                        <tr>
+                            <td>backend/graph/workflow.py</td>
+                            <td>Compilazione StateGraph e routing condizionale</td>
+                        </tr>
+                        <tr>
+                            <td>backend/services/llm_provider.py</td>
+                            <td>BaseLLMProvider, GeminiProvider, factory da env</td>
+                        </tr>
+                        <tr>
+                            <td>backend/services/mock_provider.py</td>
+                            <td>Mock deterministico per test e demo offline</td>
+                        </tr>
+                        <tr>
+                            <td>backend/services/pdf_parser.py</td>
+                            <td>Estrazione testo PDF in memoria</td>
+                        </tr>
+                        <tr>
+                            <td>backend/tests/</td>
+                            <td>4 file di test, generatore fixture PDF, demo CLI</td>
+                        </tr>
+                        <tr>
+                            <td>frontend/</td>
+                            <td>index.html, css/style.css, js/app.js</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -383,43 +611,56 @@ python -m uvicorn main:app --reload --port 8000</code></pre>
         <section class="card" id="schemas">
             <h2><span class="step-n">6</span>Modelli Pydantic</h2>
             <p class="file">backend/models/schemas.py: 8 modelli</p>
-            <p>Pydantic valida a runtime: se l'LLM restituisce un campo del tipo sbagliato, la validazione fallisce invece di propagare dati sporchi. I vincoli usati qui sono <code>Literal</code> (valori ammessi), default, <code>default_factory</code> e un <code>model_validator</code> cross-field.</p>
-            <h3>Perche le description contano</h3>
-            <p>Ogni <code>Field(description="...")</code> finisce nel JSON Schema inviato all'LLM come <code>response_schema</code>. Esempio di come il modello vede il campo severita:</p>
-<pre><code>{
+            <p>Pydantic valida a runtime: se l'LLM restituisce un campo del tipo sbagliato, la validazione fallisce
+                invece di propagare dati sporchi. I vincoli usati qui sono <code>Literal</code> (valori ammessi),
+                default, <code>default_factory</code> e un <code>model_validator</code> cross-field.</p>
+            <h3>Perché le description contano</h3>
+            <p>Ogni <code>Field(description="...")</code> finisce nel JSON Schema inviato all'LLM come
+                <code>response_schema</code>. Esempio di come il modello vede il campo severità:
+            </p>
+            <pre><code>{
   "severity": {
     "type": "string",
     "enum": ["low", "medium", "high"],
-    "description": "'low' = &lt;5% o &lt;500EUR; ..."
+    "description": "'low' = <5% o <500EUR; ..."
   }
 }</code></pre>
-            <p>La descrizione e contemporaneamente documentazione per lo sviluppatore e istruzione per il modello: scrivere buone description e la forma principale di prompt engineering del progetto.</p>
+            <p>La descrizione è contemporaneamente documentazione per lo sviluppatore e istruzione per il modello:
+                scrivere buone description è la forma principale di prompt engineering del progetto.</p>
             <h3>I modelli in breve</h3>
             <ul>
                 <li><code>InvoiceLine</code>: description, quantity, unit_price, total_price.</li>
-                <li><code>Invoice</code>: testata (id, vendor, client, date, currency), <code>lines</code>, subtotal, tax_rate/amount, total_amount, payment_terms_days, notes.</li>
+                <li><code>Invoice</code>: testata (id, vendor, client, date, currency), <code>lines</code>, subtotal,
+                    tax_rate/amount, total_amount, payment_terms_days, notes.</li>
                 <li><code>ContractPricingRule</code>: service_type, max_unit_price, unit, notes.</li>
-                <li><code>ContractTerms</code>: validita, termini di pagamento, pricing_rules, flag e regole di adeguamento, penali, legge applicabile.</li>
-                <li><code>Discrepancy</code>: field_name, invoice_value, expected_value, delta, severity, is_justified_by_contract, reasoning.</li>
-                <li><code>FinalReport</code>: status, id fattura/contratto, summary, discrepancies, total_overbilling, dispute_email_draft.</li>
-                <li><code>DiscrepancyReasoning</code> / <code>ContractReasoningOutput</code>: schemi intermedi del nodo di reasoning (verdetto JUSTIFIED/UNJUSTIFIED per campo).</li>
+                <li><code>ContractTerms</code>: validita, termini di pagamento, pricing_rules, flag e regole di
+                    adeguamento, penali, legge applicabile.</li>
+                <li><code>Discrepancy</code>: field_name, invoice_value, expected_value, delta, severity,
+                    is_justified_by_contract, reasoning.</li>
+                <li><code>FinalReport</code>: status, id fattura/contratto, summary, discrepancies, total_overbilling,
+                    dispute_email_draft.</li>
+                <li><code>DiscrepancyReasoning</code> / <code>ContractReasoningOutput</code>: schemi intermedi del nodo
+                    di reasoning (verdetto JUSTIFIED/UNJUSTIFIED per campo).</li>
                 <li><code>DisputeEmailDraft</code>: subject + body della bozza.</li>
             </ul>
             <h3>Il validatore di coerenza</h3>
-<pre><code>@model_validator(mode="after")
+            <pre><code>@model_validator(mode="after")
 def validate_consistency(self) -> FinalReport:
     if self.status == "DISCREPANCIES_FOUND" and not self.discrepancies:
         raise ValueError("DISCREPANCIES_FOUND richiede almeno una discrepanza.")
     if self.status == "APPROVED" and self.discrepancies:
         raise ValueError("APPROVED non puo contenere discrepanze.")</code></pre>
-            <p><code>mode="after"</code> significa: esegui dopo la validazione dei singoli campi, quando l'oggetto e completo. Impedisce di costruire report logicamente contraddittori, da qualunque nodo provengano.</p>
+            <p><code>mode="after"</code> significa: esegui dopo la validazione dei singoli campi, quando l'oggetto e
+                completo. Impedisce di costruire report logicamente contraddittori, da qualunque nodo provengano.</p>
         </section>
 
         <section class="card" id="state">
             <h2><span class="step-n">7</span>Stato del grafo</h2>
             <p class="file">backend/graph/state.py</p>
-            <p>LangGraph fa circolare un dizionario condiviso tra i nodi. <code>TypedDict(total=False)</code> rende tutte le chiavi facoltative: ogni nodo restituisce solo il delta (le chiavi che aggiorna) e LangGraph lo fonde nello stato globale. A runtime e un normale dict; i tipi servono a IDE e type checker.</p>
-<pre><code>class GraphState(TypedDict, total=False):
+            <p>LangGraph fa circolare un dizionario condiviso tra i nodi. <code>TypedDict(total=False)</code> rende
+                tutte le chiavi facoltative: ogni nodo restituisce solo il delta (le chiavi che aggiorna) e LangGraph lo
+                fonde nello stato globale. A runtime è un normale dict; i tipi servono a IDE e type checker.</p>
+            <pre><code>class GraphState(TypedDict, total=False):
     invoice_pdf_bytes: bytes
     contract_pdf_bytes: bytes
     raw_invoice_text: str
@@ -431,33 +672,41 @@ def validate_consistency(self) -> FinalReport:
     raw_discrepancies: list[Discrepancy]
     analyzed_discrepancies: list[Discrepancy]
     final_report: FinalReport | None</code></pre>
-            <p>Leggi i campi in ordine di scrittura: input bytes → testi grezzi → oggetti parsati (o errori) → discrepanze grezze → discrepanze analizzate → report. E la cronologia dell'esecuzione.</p>
+            <p>Leggi i campi in ordine di scrittura: input bytes → testi grezzi → oggetti parsati (o errori) →
+                discrepanze grezze → discrepanze analizzate → report. È la cronologia dell'esecuzione.</p>
         </section>
 
         <section class="card" id="pdf">
             <h2><span class="step-n">8</span>Parser PDF</h2>
             <p class="file">backend/services/pdf_parser.py: <code>extract_text_from_pdf(pdf_bytes, label)</code></p>
-            <p>Tre decisioni in una funzione: niente disco (<code>io.BytesIO</code> avvolge i bytes ed espone un'interfaccia file-like a pdfplumber), tolleranze spaziali (<code>x_tolerance=3, y_tolerance=3</code>) per tenere unite parole e celle delle tabelle, separatori <code>--- Pagina N ---</code> cosi l'LLM sa dove si trova.</p>
-<pre><code>with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+            <p>Tre decisioni in una funzione: niente disco (<code>io.BytesIO</code> avvolge i bytes ed espone
+                un'interfaccia file-like a pdfplumber), tolleranze spaziali (<code>x_tolerance=3, y_tolerance=3</code>)
+                per tenere unite parole e celle delle tabelle, separatori <code>--- Pagina N ---</code> così l'LLM sa
+                dove si trova.</p>
+            <pre><code>with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
     for i, page in enumerate(pdf.pages, 1):
         text = page.extract_text(x_tolerance=3, y_tolerance=3)
         if text:
             pages.append(f"--- Pagina {i} ---\n{text.strip()}")</code></pre>
-            <p>Pagine-immagine (scansioni) producono warning e, se nessuna pagina ha testo, <code>ValueError</code>: il sistema rifiuta scansioni non OCRizzate invece di inventare dati. I bytes vuoti sono rifiutati subito. Questo e il livello privacy: i PDF vivono solo in RAM e la memoria e rilasciata a fine risposta.</p>
+            <p>Pagine-immagine (scansioni) producono warning e, se nessuna pagina ha testo, <code>ValueError</code>: il
+                sistema rifiuta scansioni non OCRizzate invece di inventare dati. I bytes vuoti sono rifiutati subito.
+                Questo è il livello privacy: i PDF vivono solo in RAM e la memoria è rilasciata a fine risposta.</p>
         </section>
 
         <section class="card" id="provider">
             <h2><span class="step-n">9</span>LLM provider</h2>
             <p class="file">backend/services/llm_provider.py</p>
             <h3>L'interfaccia</h3>
-<pre><code>class BaseLLMProvider(ABC):
+            <pre><code>class BaseLLMProvider(ABC):
     @abstractmethod
     async def structured_completion(
         self, system_prompt: str, user_message: str, output_schema: type[T]
     ) -> T: ...</code></pre>
-            <p>Una classe astratta con un solo metodo: dato un prompt e uno schema Pydantic, restituisce un'istanza validata di quello schema. I nodi conoscono solo questa interfaccia: nessun import di SDK nei nodi, nessun riferimento a vendor.</p>
+            <p>Una classe astratta con un solo metodo: dato un prompt e uno schema Pydantic, restituisce un'istanza
+                validata di quello schema. I nodi conoscono solo questa interfaccia: nessun import di SDK nei nodi,
+                nessun riferimento a vendor.</p>
             <h3>L'implementazione Gemini</h3>
-<pre><code>response = await self._client.aio.models.generate_content(
+            <pre><code>response = await self._client.aio.models.generate_content(
     model=self._model,
     contents=f"{system_prompt}\n\n{user_message}",
     config={
@@ -467,64 +716,109 @@ def validate_consistency(self) -> FinalReport:
     },
 )
 result = response.parsed  # istanza Pydantic gia validata dall'SDK</code></pre>
-            <p>Da notare: niente parsing manuale di JSON e niente LangChain in mezzo: lo SDK <code>google-genai</code> vincola l'output allo schema e lo restituisce in <code>response.parsed</code>. Se e <code>None</code>, errore esplicito. Temperature 0.1 per output analitici e stabili. Gli errori di rete/SDK sono incapsulati in <code>LLMProviderError</code> con chaining (<code>raise ... from e</code>).</p>
+            <p>Da notare: niente parsing manuale di JSON e niente LangChain in mezzo: lo SDK <code>google-genai</code>
+                vincola l'output allo schema e lo restituisce in <code>response.parsed</code>. Se e <code>None</code>,
+                errore esplicito. Temperature 0.1 per output analitici e stabili. Gli errori di rete/SDK sono
+                incapsulati in <code>LLMProviderError</code> con chaining (<code>raise ... from e</code>).</p>
             <h3>La factory</h3>
-            <p><code>create_llm_provider()</code> ricarica <code>.env</code> a ogni chiamata (cambio chiave senza riavvio), restituisce <code>GeminiProvider</code> se la chiave e reale, altrimenti <code>MockLLMProvider</code> con warning. Nei nodi, <code>_get_llm()</code> preferisce il provider iniettato dai test via <code>set_llm_provider()</code>.</p>
+            <p><code>create_llm_provider()</code> ricarica <code>.env</code> a ogni chiamata (cambio chiave senza
+                riavvio), restituisce <code>GeminiProvider</code> se la chiave è reale, altrimenti
+                <code>MockLLMProvider</code> con warning. Nei nodi, <code>_get_llm()</code> preferisce il provider
+                iniettato dai test via <code>set_llm_provider()</code>.
+            </p>
         </section>
 
         <section class="card" id="mock">
             <h2><span class="step-n">10</span>Mock provider</h2>
             <p class="file">backend/services/mock_provider.py</p>
-            <p>Seleziona la risposta in base a <code>output_schema</code> e restituisce gli oggetti fissi dell'esempio guidato: fattura con le 4 righe note, contratto con le regole e gli adeguamenti ISTAT, 4 reasoning UNJUSTIFIED, bozza email completa. Con <code>should_fail=True</code> solleva sempre <code>LLMProviderError</code>.</p>
-            <p>A cosa serve: test e CI senza rete ne chiavi, demo offline, e, punto didattico importante, rende i test <strong>deterministici</strong>: stesso input, stesso output, sempre. Un test che dipende da un LLM reale non e un test, e una lotteria.</p>
+            <p>Seleziona la risposta in base a <code>output_schema</code> e restituisce gli oggetti fissi dell'esempio
+                guidato: fattura con le 4 righe note, contratto con le regole e gli adeguamenti ISTAT, 4 reasoning
+                UNJUSTIFIED, bozza email completa. Con <code>should_fail=True</code> solleva sempre
+                <code>LLMProviderError</code>.
+            </p>
+            <p>A cosa serve: test e CI senza rete né chiavi, demo offline, e, punto didattico importante, rende i test
+                <strong>deterministici</strong>: stesso input, stesso output, sempre. Un test che dipende da un LLM
+                reale non è un test, è una lotteria.
+            </p>
         </section>
 
         <section class="card" id="prompts">
             <h2><span class="step-n">11</span>Prompt</h2>
             <p class="file">backend/graph/prompts.py: 4 system prompt</p>
             <ul>
-                <li><code>EXTRACT_INVOICE_SYSTEM</code>: estrai ogni riga, date YYYY-MM-DD, valuta ISO 4217, valori esatti, <strong>non calcolare ne inferire</strong>.</li>
-                <li><code>EXTRACT_CONTRACT_SYSTEM</code>: tutte le regole pricing, max come massimale (non sconti), flag ISTAT con condizioni, pagamenti in giorni, null se assente.</li>
-                <li><code>LLM_REASONING_SYSTEM</code>: per ogni discrepanza JUSTIFIED solo con clausola esplicita, altrimenti UNJUSTIFIED; conservativo nel dubbio; <code>field_name</code> identico all'input (il merge nel nodo 5 si basa su questa uguaglianza).</li>
-                <li><code>GENERATE_DISPUTE_EMAIL_SYSTEM</code>: oggetto breve, tono assertivo non aggressivo, elenco anomalie, totale, nota di credito entro 15 giorni, riferimento al contratto.</li>
+                <li><code>EXTRACT_INVOICE_SYSTEM</code>: estrai ogni riga, date YYYY-MM-DD, valuta ISO 4217, valori
+                    esatti, <strong>non calcolare né inferire</strong>.</li>
+                <li><code>EXTRACT_CONTRACT_SYSTEM</code>: tutte le regole pricing, max come massimale (non sconti), flag
+                    ISTAT con condizioni, pagamenti in giorni, null se assente.</li>
+                <li><code>LLM_REASONING_SYSTEM</code>: per ogni discrepanza JUSTIFIED solo con clausola esplicita,
+                    altrimenti UNJUSTIFIED; conservativo nel dubbio; <code>field_name</code> identico all'input (il
+                    merge nel nodo 5 si basa su questa uguaglianza).</li>
+                <li><code>GENERATE_DISPUTE_EMAIL_SYSTEM</code>: oggetto breve, tono assertivo non aggressivo, elenco
+                    anomalie, totale, nota di credito entro 15 giorni, riferimento al contratto.</li>
             </ul>
-            <div class="callout"><strong>Dettaglio critico.</strong> La regola "field_name identico" non e cosmetica: <code>llm_contract_reasoning</code> unisce verdetti e discrepanze con una mappa su <code>field_name</code>. Se l'LLM lo alterasse, il verdetto andrebbe perso e la discrepanza resterebbe ingiustificata di default (fallback conservativo).</div>
+            <div class="callout"><strong>Dettaglio critico.</strong> La regola "field_name identico" non è cosmetica:
+                <code>llm_contract_reasoning</code> unisce verdetti e discrepanze con una mappa su
+                <code>field_name</code>. Se l'LLM lo alterasse, il verdetto andrebbe perso e la discrepanza resterebbe
+                ingiustificata di default (fallback conservativo).
+            </div>
         </section>
 
         <section class="card" id="nodes">
-            <h2><span class="step-n">12</span>Nodi, controlli e severita</h2>
+            <h2><span class="step-n">12</span>Nodi, controlli e severità</h2>
             <p class="file">backend/graph/nodes.py: 6 funzioni async/sync</p>
             <h3>parse_documents, extract_invoice, extract_contract</h3>
-            <p>Parsing locale poi due estrazioni LLM indipendenti. Su <code>LLMProviderError</code> il nodo non solleva: scrive <code>invoice_extraction_error</code> / <code>contract_extraction_error</code> nello stato e il grafo continua verso un report di errore gestito (vedi sezione 19).</p>
+            <p>Parsing locale poi due estrazioni LLM indipendenti. Su <code>LLMProviderError</code> il nodo non solleva:
+                scrive <code>invoice_extraction_error</code> / <code>contract_extraction_error</code> nello stato e il
+                grafo continua verso un report di errore gestito (vedi sezione 19).</p>
             <h3>deterministic_match: i 5 controlli</h3>
             <ol>
-                <li><strong>Riga:</strong> <code>round(qty × unit_price, 2)</code> vs <code>total_price</code>, tolleranza 0.01. Esempio: 3 × 400 = 1.200 vs 1.250 → delta +50.</li>
-                <li><strong>Subtotale:</strong> somma dei totali riga vs subtotale. Esempio: 16.750 vs 16.800 → +50.</li>
-                <li><strong>Totale:</strong> subtotale + IVA vs totale (solo se <code>tax_amount</code> presente). Nell'esempio non scatta.</li>
-                <li><strong>Tariffe:</strong> per ogni riga, cerca la regola con affinitia ≥ 0.4 e confronta <code>unit_price &gt; max_unit_price</code>. Esempio: 600 &gt; 500 → sovrapprezzo (600 − 500) × 10 = 1.000.</li>
-                <li><strong>Termini:</strong> se i giorni in fattura sono inferiori a quelli a contratto. Esempio: 30 &lt; 60, delta None, severita fissa medium.</li>
+                <li><strong>Riga:</strong> <code>round(qty × unit_price, 2)</code> vs <code>total_price</code>,
+                    tolleranza 0.01. Esempio: 3 × 400 = 1.200 vs 1.250 → delta +50.</li>
+                <li><strong>Subtotale:</strong> somma dei totali riga vs subtotale. Esempio: 16.750 vs 16.800 → +50.
+                </li>
+                <li><strong>Totale:</strong> subtotale + IVA vs totale (solo se <code>tax_amount</code> presente).
+                    Nell'esempio non scatta.</li>
+                <li><strong>Tariffe:</strong> per ogni riga, cerca la regola con affinità ≥ 0.4 e confronta
+                    <code>unit_price > max_unit_price</code>. Esempio: 600 > 500 → sovrapprezzo (600 − 500) × 10 =
+                    1.000.
+                </li>
+                <li><strong>Termini:</strong> se i giorni in fattura sono inferiori a quelli a contratto. Esempio: 30
+                    < 60, delta None, severità fissa medium.</li>
             </ol>
             <h3>Come funziona il matching tra voce e regola</h3>
-<pre><code>def _match_service_score(invoice_desc, contract_service):
+            <pre><code>def _match_service_score(invoice_desc, contract_service):
     a, b = normalizza le due stringhe
     if a == b: return 1.0
     if b in a or a in b: return 0.8
     return |parole in comune| / max(|parole a|, |parole b|)</code></pre>
-            <p>Tre livelli: uguaglianza, contenimento, overlap lessicale (Jaccard sul massimo, piu severo della media). Esempio ipotetico: "Consulenza Junior" vs "Consulenza Senior" → parole {consulenza, junior} e {consulenza, senior} → 1/2 = 0.5, sopra la soglia 0.4: match. La soglia e un compromesso tra tolleranza alle varianti di dicitura e falsi positivi.</p>
-            <h3>Severita</h3>
-<pre><code>high:   delta &gt; 2000 EUR oppure scostamento &gt; 15%
-medium: delta &gt; 500 EUR oppure scostamento &gt; 5%
+            <p>Tre livelli: uguaglianza, contenimento, overlap lessicale (Jaccard sul massimo, più severo della media).
+                Esempio ipotetico: "Consulenza Junior" vs "Consulenza Senior" → parole {consulenza, junior} e
+                {consulenza, senior} → 1/2 = 0.5, sopra la soglia 0.4: match. La soglia è un compromesso tra tolleranza
+                alle varianti di dicitura e falsi positivi.</p>
+            <h3>Severità</h3>
+            <pre><code>high:   delta > 2000 EUR oppure scostamento > 15%
+medium: delta > 500 EUR oppure scostamento > 5%
 low:    il resto</code></pre>
-            <p>Verifica sull'esempio: tariffa 1.000 su riferimento 500 → 200% → high; riga 50 su 1.200 → 4,2% → low; subtotale 50 su 16.750 → 0,3% → low; termini → medium fisso. Il riferimento percentuale e l'importo di confronto (massimale, totale atteso), non il totale fattura.</p>
+            <p>Verifica sull'esempio: tariffa 1.000 su riferimento 500 → 200% → high; riga 50 su 1.200 → 4,2% → low;
+                subtotale 50 su 16.750 → 0,3% → low; termini → medium fisso. Il riferimento percentuale è l'importo di
+                confronto (massimale, totale atteso), non il totale fattura.</p>
             <h3>llm_contract_reasoning e generate_dispute_report</h3>
-            <p>Il reasoning invia discrepanze + contratto serializzato (<code>model_dump_json</code>) e fonde i verdetti con <code>model_copy(update=...)</code>: gli oggetti originali non sono mutati. Su errore LLM, fallback conservativo (tutto resta ingiustificato). Il report somma solo i delta positivi ingiustificati (1.000 + 50 + 50 = 1.100; i termini non hanno delta) e chiama l'LLM per l'email solo se ci sono contestazioni, altrimenti <code>dispute_email_draft</code> resta None.</p>
+            <p>Il reasoning invia discrepanze + contratto serializzato (<code>model_dump_json</code>) e fonde i verdetti
+                con <code>model_copy(update=...)</code>: gli oggetti originali non sono mutati. Su errore LLM, fallback
+                conservativo (tutto resta ingiustificato). Il report somma solo i delta positivi ingiustificati (1.000 +
+                50 + 50 = 1.100; i termini non hanno delta) e chiama l'LLM per l'email solo se ci sono contestazioni,
+                altrimenti <code>dispute_email_draft</code> resta None.</p>
         </section>
 
         <section class="card" id="workflow">
             <h2><span class="step-n">13</span>Grafo e routing</h2>
             <p class="file">backend/graph/workflow.py</p>
-            <p>LangGraph modella il flusso come macchina a stati: nodi registrati, edge fissi, un edge condizionale. <code>build_workflow()</code> compila una volta all'avvio; l'oggetto compilato espone <code>ainvoke</code> (batch: aspetta la fine) e <code>astream(stream_mode="updates")</code> (un chunk per nodo completato, usato dallo streaming SSE).</p>
-<pre><code>graph.set_entry_point("parse_documents")
+            <p>LangGraph modella il flusso come macchina a stati: nodi registrati, edge fissi, un edge condizionale.
+                <code>build_workflow()</code> compila una volta all'avvio; l'oggetto compilato espone
+                <code>ainvoke</code> (batch: aspetta la fine) e <code>astream(stream_mode="updates")</code> (un chunk
+                per nodo completato, usato dallo streaming SSE).
+            </p>
+            <pre><code>graph.set_entry_point("parse_documents")
 graph.add_edge("parse_documents", "extract_invoice")
 graph.add_edge("extract_invoice", "extract_contract")
 graph.add_edge("extract_contract", "deterministic_match")
@@ -534,7 +828,10 @@ graph.add_conditional_edges("deterministic_match", _route_after_match, {
 })
 graph.add_edge("llm_contract_reasoning", "generate_dispute_report")
 graph.add_edge("generate_dispute_report", END)</code></pre>
-            <p>Il router e una funzione pura sullo stato: se <code>raw_discrepancies</code> e non vuota → reasoning, altrimenti report diretto. Fattura conforme = zero token di reasoning. Nota didattica: le due estrazioni LLM sono sequenziali nel grafo; parallelizzarle e una possibile ottimizzazione (sono indipendenti), a costo di maggiore complessita di gestione errori.</p>
+            <p>Il router è una funzione pura sullo stato: se <code>raw_discrepancies</code> e non vuota → reasoning,
+                altrimenti report diretto. Fattura conforme = zero token di reasoning. Nota didattica: le due estrazioni
+                LLM sono sequenziali nel grafo; parallelizzarle è una possibile ottimizzazione (sono indipendenti), a
+                costo di maggiore complessità di gestione errori.</p>
         </section>
 
         <section class="card" id="main">
@@ -542,25 +839,55 @@ graph.add_edge("generate_dispute_report", END)</code></pre>
             <p class="file">backend/main.py</p>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Endpoint</th><th>Comportamento</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Comportamento</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>GET /health</td><td>Probe di salute</td></tr>
-                        <tr><td>POST /analyze</td><td>Esecuzione batch, restituisce FinalReport JSON</td></tr>
-                        <tr><td>POST /analyze/stream</td><td>Streaming SSE: init, un evento per nodo, complete o error</td></tr>
-                        <tr><td>GET /demo-fixtures/status</td><td>Stato fixture e modalita LLM (live_gemini o zero_cost_demo)</td></tr>
-                        <tr><td>GET /demo-fixtures/invoice</td><td>PDF fattura di test</td></tr>
-                        <tr><td>GET /demo-fixtures/contract</td><td>PDF contratto di test</td></tr>
+                        <tr>
+                            <td>GET /health</td>
+                            <td>Probe di salute</td>
+                        </tr>
+                        <tr>
+                            <td>POST /analyze</td>
+                            <td>Esecuzione batch, restituisce FinalReport JSON</td>
+                        </tr>
+                        <tr>
+                            <td>POST /analyze/stream</td>
+                            <td>Streaming SSE: init, un evento per nodo, complete o error</td>
+                        </tr>
+                        <tr>
+                            <td>GET /demo-fixtures/status</td>
+                            <td>Stato fixture e modalità LLM (live_gemini o zero_cost_demo)</td>
+                        </tr>
+                        <tr>
+                            <td>GET /demo-fixtures/invoice</td>
+                            <td>PDF fattura di test</td>
+                        </tr>
+                        <tr>
+                            <td>GET /demo-fixtures/contract</td>
+                            <td>PDF contratto di test</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <h3>Il protocollo SSE</h3>
-            <p><code>/analyze/stream</code> restituisce <code>StreamingResponse</code> con un generatore asincrono: ogni <code>yield "data: {...}\n\n"</code> e un flush verso il browser, senza aspettare la fine del grafo. Sequenza tipica:</p>
-<pre><code>data: {"type": "init", "message": "Avvio analisi..."}
+            <p><code>/analyze/stream</code> restituisce <code>StreamingResponse</code> con un generatore asincrono: ogni
+                <code>yield "data: {...}\n\n"</code> è un flush verso il browser, senza aspettare la fine del grafo.
+                Sequenza tipica:
+            </p>
+            <pre><code>data: {"type": "init", "message": "Avvio analisi..."}
 data: {"type": "node_update", "node": "parse_documents", "elapsed": 0.03, "summary": "PDF estratti: ..."}
 data: {"type": "node_update", "node": "extract_invoice", ...}
 ...
 data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
-            <p>Il riepilogo per nodo e costruito dal server ispezionando il delta di stato (stessa logica del CLI). Errori di upload: 400 per content-type non PDF o file vuoto. Errori di workflow: 500. Le fixture mancanti sono rigenerate al volo da <code>generate_test_pdfs</code>. Il frontend e servito su <code>/</code>, questa guida su <code>/docs</code>.</p>
+            <p>Il riepilogo per nodo è costruito dal server ispezionando il delta di stato (stessa logica del CLI).
+                Errori di upload: 400 per content-type non PDF o file vuoto. Errori di workflow: 500. Le fixture
+                mancanti sono rigenerate al volo da <code>generate_test_pdfs</code>. Il frontend è servito su
+                <code>/</code>, questa guida su <code>/docs</code>.
+            </p>
         </section>
 
         <section class="card" id="test">
@@ -568,28 +895,60 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
             <p class="file">backend/tests/: esecuzione: <code>PYTHONPATH=backend pytest -v backend/tests/</code></p>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>File</th><th>Copertura</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Copertura</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>test_pdf_parser.py</td><td>Estrazione testo fattura/contratto, rifiuto bytes vuoti</td></tr>
-                        <tr><td>test_deterministic_match.py</td><td>4 discrepanze attese con delta esatti, fattura conforme a zero, stato vuoto</td></tr>
-                        <tr><td>test_workflow.py</td><td>End-to-end con Mock, routing condizionale, errore LLM</td></tr>
-                        <tr><td>test_api.py</td><td>Health, rifiuto non-PDF e file vuoti, E2E /analyze, fixture demo</td></tr>
+                        <tr>
+                            <td>test_pdf_parser.py</td>
+                            <td>Estrazione testo fattura/contratto, rifiuto bytes vuoti</td>
+                        </tr>
+                        <tr>
+                            <td>test_deterministic_match.py</td>
+                            <td>4 discrepanze attese con delta esatti, fattura conforme a zero, stato vuoto</td>
+                        </tr>
+                        <tr>
+                            <td>test_workflow.py</td>
+                            <td>End-to-end con Mock, routing condizionale, errore LLM</td>
+                        </tr>
+                        <tr>
+                            <td>test_api.py</td>
+                            <td>Health, rifiuto non-PDF e file vuoti, E2E /analyze, fixture demo</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <h3>Strategia: perche questi test funzionano</h3>
+            <h3>Strategia: perché questi test funzionano</h3>
             <ul>
-                <li><strong>Fixture con anomalie note</strong> (<code>generate_test_pdfs.py</code>, fpdf2): i PDF non sono casuali, contengono esattamente le 4 discrepanze della sezione 4. Se il sistema ne trova 3 o 5, qualcosa si e rotto.</li>
-                <li><strong>Mock deterministico:</strong> i test di workflow e API iniettano <code>MockLLMProvider</code> via <code>set_llm_provider()</code> e lo resettano dopo ogni test (fixture autouse). Nessuna rete, nessuna chiave, esecuzione sotto il secondo.</li>
-                <li><strong>Tre livelli:</strong> unita (parser, match), integrazione (grafo), API (TestClient in-process, senza socket reali).</li>
-                <li><strong>Asserzioni sui numeri, non sulle parole:</strong> <code>delta == 1000.0</code>, <code>total_overbilling &gt;= 1000.0</code>. I testi LLM non sono mai assertati alla lettera (sarebbero fragili anche con il Mock, e impossibili con un modello reale).</li>
+                <li><strong>Fixture con anomalie note</strong> (<code>generate_test_pdfs.py</code>, fpdf2): i PDF non
+                    sono casuali, contengono esattamente le 4 discrepanze della sezione 4. Se il sistema ne trova 3 o 5,
+                    qualcosa si è rotto.</li>
+                <li><strong>Mock deterministico:</strong> i test di workflow e API iniettano
+                    <code>MockLLMProvider</code> via <code>set_llm_provider()</code> e lo resettano dopo ogni test
+                    (fixture autouse). Nessuna rete, nessuna chiave, esecuzione sotto il secondo.
+                </li>
+                <li><strong>Tre livelli:</strong> unita (parser, match), integrazione (grafo), API (TestClient
+                    in-process, senza socket reali).</li>
+                <li><strong>Asserzioni sui numeri, non sulle parole:</strong> <code>delta == 1000.0</code>,
+                    <code>total_overbilling >= 1000.0</code>. I testi LLM non sono mai assertati alla lettera
+                    (sarebbero fragili anche con il Mock, e impossibili con un modello reale).
+                </li>
             </ul>
         </section>
 
         <section class="card" id="cli">
             <h2><span class="step-n">16</span>CLI runner</h2>
             <p class="file">backend/run_live_stream.py · backend/tests/run_demo.py</p>
-            <p><code>run_live_stream.py</code> consuma <code>workflow.astream(stream_mode="updates")</code> e stampa una riga per nodo con tempo e riepilogo: stessa sorgente dati dell'SSE, utile per debug senza browser. <code>run_demo.py</code> esegue <code>ainvoke</code> e stampa report, discrepanze e bozza email. Entrambi rigenerano le fixture se mancano e usano il Mock senza chiave Gemini. Nota: <code>run_demo.py</code> importa il Mock da <code>services.mock_provider</code> (import diretto, non via altri moduli).</p>
+            <p><code>run_live_stream.py</code> consuma <code>workflow.astream(stream_mode="updates")</code> e stampa una
+                riga per nodo con tempo e riepilogo: stessa sorgente dati dell'SSE, utile per debug senza browser.
+                <code>run_demo.py</code> esegue <code>ainvoke</code> e stampa report, discrepanze e bozza email.
+                Entrambi rigenerano le fixture se mancano e usano il Mock senza chiave Gemini. Nota:
+                <code>run_demo.py</code> importa il Mock da <code>services.mock_provider</code> (import diretto, non via
+                altri moduli).
+            </p>
         </section>
 
         <section class="card" id="frontend">
@@ -597,22 +956,37 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
             <p class="file">frontend/index.html · frontend/css/style.css · frontend/js/app.js</p>
             <h3>Struttura della pagina</h3>
             <ul>
-                <li><strong>Topbar:</strong> brand, badge stato API (<code>/health</code>), badge modalita LLM (<code>/demo-fixtures/status</code>), link a questa guida.</li>
-                <li><strong>Sezione 1, input:</strong> due dropzone (click, tastiera, drag and drop) con validazione PDF e limite 10 MB, anteprima nome/dimensione, rimozione, pulsante demo e avvio (abilitato solo con entrambi i file).</li>
-                <li><strong>Sezione 2, avanzamento:</strong> stepper a 5 fasi (parsing, estrazione, confronto, valutazione, report) piu log SSE con timer.</li>
-                <li><strong>Sezione 3, risultati:</strong> banner esito, KPI (importo contestabile, id fattura/contratto, conteggio, durata), tabella discrepanze con filtri per severita, bozza email con copia negli appunti, pulsante nuova analisi.</li>
+                <li><strong>Topbar:</strong> brand, badge stato API (<code>/health</code>), badge modalità LLM
+                    (<code>/demo-fixtures/status</code>), link a questa guida.</li>
+                <li><strong>Sezione 1, input:</strong> due dropzone (click, tastiera, drag and drop) con validazione PDF
+                    e limite 10 MB, anteprima nome/dimensione, rimozione, pulsante demo e avvio (abilitato solo con
+                    entrambi i file).</li>
+                <li><strong>Sezione 2, avanzamento:</strong> stepper a 5 fasi (parsing, estrazione, confronto,
+                    valutazione, report) più log SSE con timer.</li>
+                <li><strong>Sezione 3, risultati:</strong> banner esito, KPI (importo contestabile, id
+                    fattura/contratto, conteggio, durata), tabella discrepanze con filtri per severità, bozza email con
+                    copia negli appunti, pulsante nuova analisi.</li>
             </ul>
             <h3>Macchina a stati del client</h3>
-            <p><code>startAnalysis()</code> segue un ciclo fisso: valida → congela i pulsanti → mostra stepper e azzera log → apre <code>fetch("/analyze/stream")</code> → legge il reader chunk per chunk, accumula il buffer, spezza su <code>\n\n</code>, parsifica ogni riga <code>data:</code> → aggiorna stepper (<code>nodeToStep</code>) e log → su <code>complete</code> memorizza il report → nasconde lo stepper e renderizza. Errori di rete o eventi <code>error</code> mostrano un toast e ripristinano i pulsanti. Il mapping nodi→step comprime le due estrazioni in un unico step "Estrazione dati".</p>
+            <p><code>startAnalysis()</code> segue un ciclo fisso: valida → congela i pulsanti → mostra stepper e azzera
+                log → apre <code>fetch("/analyze/stream")</code> → legge il reader chunk per chunk, accumula il buffer,
+                spezza su <code>\n\n</code>, parsifica ogni riga <code>data:</code> → aggiorna stepper
+                (<code>nodeToStep</code>) e log → su <code>complete</code> memorizza il report → nasconde lo stepper e
+                renderizza. Errori di rete o eventi <code>error</code> mostrano un toast e ripristinano i pulsanti. Il
+                mapping nodi→step comprime le due estrazioni in un unico step "Estrazione dati".</p>
             <h3>Stile</h3>
-            <p>Tema chiaro con token condivisi con questa guida (<code>--bg</code>, <code>--surface</code>, <code>--accent</code>, font di sistema). Nessuna dipendenza esterna: un HTML, un CSS, un JS vanilla.</p>
+            <p>Tema chiaro con token condivisi con questa guida (<code>--bg</code>, <code>--surface</code>,
+                <code>--accent</code>, font di sistema). Nessuna dipendenza esterna: un HTML, un CSS, un JS vanilla.
+            </p>
         </section>
 
         <section class="card" id="estendere">
             <h2><span class="step-n">18</span>Estendere il sistema: tre ricette</h2>
             <h3>A. Aggiungere un controllo deterministico</h3>
-            <p>Apri <code>deterministic_match</code> in <code>nodes.py</code> e appendi una <code>Discrepancy</code> con <code>field_name</code> univoco (diventera chiave del reasoning e dei test). Esempio di scheletro:</p>
-<pre><code>if invoice.due_date is not None and ...:
+            <p>Apri <code>deterministic_match</code> in <code>nodes.py</code> e appendi una <code>Discrepancy</code> con
+                <code>field_name</code> univoco (diventera chiave del reasoning e dei test). Esempio di scheletro:
+            </p>
+            <pre><code>if invoice.due_date is not None and ...:
     discrepancies.append(Discrepancy(
         field_name="due_date",
         invoice_value=...,
@@ -622,48 +996,118 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
         is_justified_by_contract=False,
         reasoning="...",
     ))</code></pre>
-            <p>Poi aggiungi il caso in <code>test_deterministic_match.py</code> e, se serve, il verdetto atteso nel Mock.</p>
+            <p>Poi aggiungi il caso in <code>test_deterministic_match.py</code> e, se serve, il verdetto atteso nel
+                Mock.</p>
             <h3>B. Aggiungere un provider LLM</h3>
             <ol>
-                <li>Crea una sottoclasse di <code>BaseLLMProvider</code> che implementa <code>structured_completion</code> (chiamata API + validazione <code>output_schema</code>).</li>
+                <li>Crea una sottoclasse di <code>BaseLLMProvider</code> che implementa
+                    <code>structured_completion</code> (chiamata API + validazione <code>output_schema</code>).
+                </li>
                 <li>Aggiungi il ramo in <code>create_llm_provider()</code> letto da una nuova variabile d'ambiente.</li>
                 <li>Verifica con la suite esistente: i test usano il Mock e devono restare verdi senza toccarli.</li>
             </ol>
             <h3>C. Aggiungere un endpoint</h3>
-            <p>Segui il pattern di <code>/analyze</code>: valida l'upload con <code>_read_pdf_upload</code>, invoca il workflow, gestisci 400/500. Per output progressivi, copia il generatore di <code>/analyze/stream</code> e aggiungi i tipi di evento che servono al client.</p>
+            <p>Segui il pattern di <code>/analyze</code>: valida l'upload con <code>_read_pdf_upload</code>, invoca il
+                workflow, gestisci 400/500. Per output progressivi, copia il generatore di <code>/analyze/stream</code>
+                e aggiungi i tipi di evento che servono al client.</p>
         </section>
 
         <section class="card" id="errori">
             <h2><span class="step-n">19</span>Gestione degli errori</h2>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Guasto</th><th>Dove</th><th>Comportamento</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Guasto</th>
+                            <th>Dove</th>
+                            <th>Comportamento</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>File non PDF / vuoto</td><td>main._read_pdf_upload</td><td>HTTP 400 con dettaglio</td></tr>
-                        <tr><td>PDF senza testo (scansione)</td><td>pdf_parser</td><td>ValueError → 500 via workflow, messaggio esplicito</td></tr>
-                        <tr><td>Estrazione LLM fallita</td><td>extract_*</td><td>Errore nello stato, grafo non collassa</td></tr>
-                        <tr><td>Reasoning LLM fallito</td><td>llm_contract_reasoning</td><td>Fallback: discrepanze restano ingiustificate</td></tr>
-                        <tr><td>Email LLM fallita</td><td>generate_dispute_report</td><td>Segnaposto testuale, report comunque valido</td></tr>
-                        <tr><td>Estrazione fallita a monte</td><td>generate_dispute_report</td><td>Report APPROVED con summary "Analisi incompleta..." e zero discrepanze</td></tr>
-                        <tr><td>Report mancante in stream</td><td>analyze_stream</td><td>Evento error al client</td></tr>
+                        <tr>
+                            <td>File non PDF / vuoto</td>
+                            <td>main._read_pdf_upload</td>
+                            <td>HTTP 400 con dettaglio</td>
+                        </tr>
+                        <tr>
+                            <td>PDF senza testo (scansione)</td>
+                            <td>pdf_parser</td>
+                            <td>ValueError → 500 via workflow, messaggio esplicito</td>
+                        </tr>
+                        <tr>
+                            <td>Estrazione LLM fallita</td>
+                            <td>extract_*</td>
+                            <td>Errore nello stato, grafo non collassa</td>
+                        </tr>
+                        <tr>
+                            <td>Reasoning LLM fallito</td>
+                            <td>llm_contract_reasoning</td>
+                            <td>Fallback: discrepanze restano ingiustificate</td>
+                        </tr>
+                        <tr>
+                            <td>Email LLM fallita</td>
+                            <td>generate_dispute_report</td>
+                            <td>Segnaposto testuale, report comunque valido</td>
+                        </tr>
+                        <tr>
+                            <td>Estrazione fallita a monte</td>
+                            <td>generate_dispute_report</td>
+                            <td>Report APPROVED con summary "Analisi incompleta..." e zero discrepanze</td>
+                        </tr>
+                        <tr>
+                            <td>Report mancante in stream</td>
+                            <td>analyze_stream</td>
+                            <td>Evento error al client</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="callout warn"><strong>Scelta di design.</strong> A estrazione fallita il report e APPROVED con zero discrepanze: il validatore lo impone. Il summary spiega l'incompletezza, ma un consumatore che guarda solo <code>status</code> potrebbe fraintendere. Se integri via API, controlla sempre <code>analysis_summary</code>.</div>
+            <div class="callout warn"><strong>Scelta di design.</strong> A estrazione fallita il report e APPROVED con
+                zero discrepanze: il validatore lo impone. Il summary spiega l'incompletezza, ma un consumatore che
+                guarda solo <code>status</code> potrebbe fraintendere. Se integri via API, controlla sempre
+                <code>analysis_summary</code>.
+            </div>
         </section>
 
         <section class="card" id="aws">
             <h2><span class="step-n">20</span>Corrispondenza AWS</h2>
-            <p>Il codice e disegnato per una migrazione a basso accoppiamento: i punti di taglio sono gia i confini dei moduli.</p>
+            <p>Il codice e disegnato per una migrazione a basso accoppiamento: i punti di taglio sono già i confini dei
+                moduli.</p>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Locale (questo repo)</th><th>AWS target</th><th>Punto di taglio</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Locale (questo repo)</th>
+                            <th>AWS target</th>
+                            <th>Punto di taglio</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>FastAPI + Uvicorn</td><td>API Gateway + Lambda/ECS</td><td>main.py: gli handler restano, cambia il runtime</td></tr>
-                        <tr><td>Gemini / Mock</td><td>Bedrock</td><td>Nuova sottoclasse di BaseLLMProvider</td></tr>
-                        <tr><td>BytesIO in RAM</td><td>S3 con lifecycle a scadenza breve</td><td>pdf_parser + stato: bytes da S3 invece che da upload</td></tr>
-                        <tr><td>Log console</td><td>DynamoDB audit trail, CloudWatch</td><td>Logging strutturato dei nodi</td></tr>
-                        <tr><td>Testo email</td><td>SES per l'invio reale</td><td>generate_dispute_report: recapito invece di bozza</td></tr>
+                        <tr>
+                            <td>FastAPI + Uvicorn</td>
+                            <td>API Gateway + Lambda/ECS</td>
+                            <td>main.py: gli handler restano, cambia il runtime</td>
+                        </tr>
+                        <tr>
+                            <td>Gemini / Mock</td>
+                            <td>Bedrock</td>
+                            <td>Nuova sottoclasse di BaseLLMProvider</td>
+                        </tr>
+                        <tr>
+                            <td>BytesIO in RAM</td>
+                            <td>S3 con lifecycle a scadenza breve</td>
+                            <td>pdf_parser + stato: bytes da S3 invece che da upload</td>
+                        </tr>
+                        <tr>
+                            <td>Log console</td>
+                            <td>DynamoDB audit trail, CloudWatch</td>
+                            <td>Logging strutturato dei nodi</td>
+                        </tr>
+                        <tr>
+                            <td>Testo email</td>
+                            <td>SES per l'invio reale</td>
+                            <td>generate_dispute_report: recapito invece di bozza</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -673,17 +1117,49 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
             <h2><span class="step-n">21</span>Glossario</h2>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Termine</th><th>Significato</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Termine</th>
+                            <th>Significato</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>MSA</td><td>Master Services Agreement: il contratto quadro con tariffe e condizioni</td></tr>
-                        <tr><td>Structured output</td><td>Output LLM vincolato a uno schema (qui Pydantic via response_schema)</td></tr>
-                        <tr><td>GraphState</td><td>Dizionario condiviso che attraversa i nodi del grafo</td></tr>
-                        <tr><td>Edge condizionale</td><td>Diramazione del grafo decisa da una funzione sullo stato</td></tr>
-                        <tr><td>SSE</td><td>Server-Sent Events: stream HTTP unidirezionale server → browser</td></tr>
-                        <tr><td>Severita</td><td>low/medium/high da soglie su delta assoluto e percentuale</td></tr>
-                        <tr><td>Mock provider</td><td>Implementazione finta e deterministica dell'interfaccia LLM per test/demo</td></tr>
-                        <tr><td>Degradazione elegante</td><td>Su errore, risultato parziale esplicito invece di crash</td></tr>
-                        <tr><td>model_validator</td><td>Validazione Pydantic su piu campi dopo quella dei singoli campi</td></tr>
+                        <tr>
+                            <td>MSA</td>
+                            <td>Master Services Agreement: il contratto quadro con tariffe e condizioni</td>
+                        </tr>
+                        <tr>
+                            <td>Structured output</td>
+                            <td>Output LLM vincolato a uno schema (qui Pydantic via response_schema)</td>
+                        </tr>
+                        <tr>
+                            <td>GraphState</td>
+                            <td>Dizionario condiviso che attraversa i nodi del grafo</td>
+                        </tr>
+                        <tr>
+                            <td>Edge condizionale</td>
+                            <td>Diramazione del grafo decisa da una funzione sullo stato</td>
+                        </tr>
+                        <tr>
+                            <td>SSE</td>
+                            <td>Server-Sent Events: stream HTTP unidirezionale server → browser</td>
+                        </tr>
+                        <tr>
+                            <td>Severità</td>
+                            <td>low/medium/high da soglie su delta assoluto e percentuale</td>
+                        </tr>
+                        <tr>
+                            <td>Mock provider</td>
+                            <td>Implementazione finta e deterministica dell'interfaccia LLM per test/demo</td>
+                        </tr>
+                        <tr>
+                            <td>Degradazione elegante</td>
+                            <td>Su errore, risultato parziale esplicito invece di crash</td>
+                        </tr>
+                        <tr>
+                            <td>model_validator</td>
+                            <td>Validazione Pydantic su più campi dopo quella dei singoli campi</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -693,14 +1169,39 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
             <h2><span class="step-n">22</span>Risoluzione problemi</h2>
             <div class="table-wrap">
                 <table class="table">
-                    <thead><tr><th>Sintomo</th><th>Causa probabile e rimedio</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Sintomo</th>
+                            <th>Causa probabile e rimedio</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>Il sistema usa sempre il Mock</td><td>Chiave assente o placeholder in backend/.env; verifica llm_mode su /demo-fixtures/status</td></tr>
-                        <tr><td>400 "deve essere un PDF"</td><td>Content-type non application/pdf; il frontend accetta solo .pdf</td></tr>
-                        <tr><td>"Nessun testo estraibile"</td><td>PDF da scansione senza OCR; serve un PDF con testo selezionabile</td></tr>
-                        <tr><td>Porta 8000 occupata</td><td>Altro uvicorn attivo; terminalo prima di riavviare</td></tr>
-                        <tr><td>Test lenti o con errori di rete</td><td>Provider reale iniettato per errore; i test devono girare con Mock (fixture autouse)</td></tr>
-                        <tr><td>Report APPROVED inatteso</td><td>Leggi analysis_summary: probabile estrazione fallita, vedi sezione 19</td></tr>
+                        <tr>
+                            <td>Il sistema usa sempre il Mock</td>
+                            <td>Chiave assente o placeholder in backend/.env; verifica llm_mode su /demo-fixtures/status
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>400 "deve essere un PDF"</td>
+                            <td>Content-type non application/pdf; il frontend accetta solo .pdf</td>
+                        </tr>
+                        <tr>
+                            <td>"Nessun testo estraibile"</td>
+                            <td>PDF da scansione senza OCR; serve un PDF con testo selezionabile</td>
+                        </tr>
+                        <tr>
+                            <td>Porta 8000 occupata</td>
+                            <td>Altro uvicorn attivo; terminalo prima di riavviare</td>
+                        </tr>
+                        <tr>
+                            <td>Test lenti o con errori di rete</td>
+                            <td>Provider reale iniettato per errore; i test devono girare con Mock (fixture autouse)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Report APPROVED inatteso</td>
+                            <td>Leggi analysis_summary: probabile estrazione fallita, vedi sezione 19</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -710,9 +1211,11 @@ data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
 
     <footer>
         <div class="container">
-            <p>Revenue Leakage Defender: strumento di verifica fatture/contratti. Uso interno, con revisione umana obbligatoria prima di qualsiasi contestazione.</p>
+            <p>Revenue Leakage Defender: strumento di verifica fatture/contratti. Uso interno, con revisione umana
+                obbligatoria prima di qualsiasi contestazione.</p>
         </div>
     </footer>
 
 </body>
+
 </html>
