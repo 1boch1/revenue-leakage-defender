@@ -1,5 +1,7 @@
 # Revenue Leakage Defender
 
+> English version available in [README.en.md](README.en.md).
+
 Agente GenAI per la verifica di conformità tra fatture fornitore e contratti quadro.
 Confronta righe fattura e clausole contrattuali con una pipeline ibrida
 deterministica/probabilistica orchestrata con LangGraph.

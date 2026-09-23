@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study manual: Revenue Leakage Defender</title>
+    <meta name="description" content="Technical manual: architecture, modules, data flow, tests, frontend and extensions.">
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --border: #dfe3e8;
+            --border-strong: #c3cad2;
+            --text: #1a2330;
+            --text-2: #4d5a6b;
+            --text-3: #758096;
+            --accent: #1d4ed8;
+            --accent-ink: #ffffff;
+            --danger: #b42318;
+            --danger-bg: #fef3f2;
+            --ok: #067647;
+            --ok-bg: #ecfdf3;
+            --code-bg: #0f1622;
+            --code-fg: #d4dce6;
+            --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+            --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --radius: 6px;
+            --max: 960px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .container {
+            max-width: var(--max);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        .topbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .brand-name { font-weight: 650; font-size: 15px; display: block; }
+        .brand-sub { font-size: 12.5px; color: var(--text-3); }
+        .topbar-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-2);
+            flex-wrap: wrap;
+        }
+        .doc-link { color: var(--text-2); }
+        .doc-link:hover { color: var(--text); }
+
+        .page-head { padding: 28px 0 4px; }
+        .page-head h1 {
+            font-size: 24px;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            margin: 0 0 8px;
+            font-weight: 650;
+        }
+        .lede { margin: 0 0 6px; color: var(--text-2); max-width: 62ch; }
+        .meta { margin: 0; font-size: 13px; color: var(--text-3); }
+
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-top: 16px;
+            columns: 2;
+            column-gap: 32px;
+        }
+        @media (max-width: 680px) { .toc { columns: 1; } }
+        .toc ol { margin: 0; padding-left: 20px; font-size: 14px; }
+        .toc li { margin: 3px 0; break-inside: avoid; }
+        .toc a { color: var(--text-2); text-decoration: none; }
+        .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 16px;
+        }
+        .card h2 {
+            font-size: 16px;
+            font-weight: 650;
+            margin: 0 0 6px;
+        }
+        .card h3 {
+            font-size: 14px;
+            font-weight: 650;
+            margin: 20px 0 6px;
+        }
+        .card h4 {
+            font-size: 13.5px;
+            font-weight: 650;
+            margin: 16px 0 4px;
+            color: var(--text);
+        }
+        .card p { margin: 8px 0; color: var(--text-2); font-size: 14.5px; }
+        .card p.file {
+            font-family: var(--mono);
+            font-size: 12.5px;
+            color: var(--text-3);
+            margin: 0 0 8px;
+        }
+        .card ul, .card ol { color: var(--text-2); font-size: 14.5px; margin: 8px 0; padding-left: 22px; }
+        .card li { margin: 4px 0; }
+        .card code, .toc code {
+            font-family: var(--mono);
+            font-size: 12.5px;
+            background: #eef1f5;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 5px;
+            white-space: nowrap;
+        }
+        .step-n {
+            font-family: var(--mono);
+            font-size: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            min-width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--text);
+            color: #fff;
+            margin-right: 8px;
+            vertical-align: 2px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            line-height: 1.6;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            margin: 10px 0 0;
+        }
+        pre code {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            white-space: pre !important;
+            color: inherit;
+        }
+
+        .callout {
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 12px 16px;
+            margin: 12px 0 0;
+            font-size: 14px;
+            color: var(--text-2);
+        }
+        .callout strong { color: var(--text); }
+        .callout.warn { border-left-color: var(--danger); }
+
+        .table-wrap { overflow-x: auto; margin-top: 8px; }
+        .table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        .table th, .table td {
+            text-align: left;
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+            color: var(--text-2);
+        }
+        .table thead th {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table td:first-child { font-family: var(--mono); font-size: 12.5px; }
+
+        .stages { list-style: none; margin: 8px 0 0; padding: 0; }
+        .stages li {
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14.5px;
+            color: var(--text-2);
+        }
+        .stages li:last-child { border-bottom: none; }
+        .stages code {
+            font-family: var(--mono);
+            font-size: 12.5px;
+            color: var(--text);
+            min-width: 220px;
+        }
+
+        footer {
+            margin-top: 32px;
+            border-top: 1px solid var(--border);
+            padding: 16px 0 28px;
+            font-size: 12.5px;
+            color: var(--text-3);
+        }
+        footer p { margin: 0; }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <span class="brand-name">Revenue Leakage Defender</span>
+                <span class="brand-sub">Study manual</span>
+            </div>
+            <div class="topbar-status">
+                <a class="doc-link" href="/docs/guida-codice.html">Versione italiana</a>
+                <a class="doc-link" href="/">Back to the application</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="page-head">
+            <h1>Study manual</h1>
+            <p class="lede">From problem to code: how the system compares invoices and contracts, why each module exists, how data flows node by node, and how to extend the project. Excerpts match the current code in the repository.</p>
+            <p class="meta">Backend: <code>backend/</code> · Frontend: <code>frontend/</code> · 6-node LangGraph pipeline · 14 tests</p>
+        </section>
+
+        <nav class="toc" aria-label="Contents">
+            <ol>
+                <li><a href="#metodo">How to study this manual</a></li>
+                <li><a href="#problema">The problem and the core idea</a></li>
+                <li><a href="#setup">Setup and configuration</a></li>
+                <li><a href="#esempio">Worked example: invoice INV-2024-1042</a></li>
+                <li><a href="#moduli">Module map</a></li>
+                <li><a href="#schemas">Pydantic models (<code>schemas.py</code>)</a></li>
+                <li><a href="#state">Graph state (<code>state.py</code>)</a></li>
+                <li><a href="#pdf">PDF parser (<code>pdf_parser.py</code>)</a></li>
+                <li><a href="#provider">LLM provider (<code>llm_provider.py</code>)</a></li>
+                <li><a href="#mock">Mock provider (<code>mock_provider.py</code>)</a></li>
+                <li><a href="#prompts">Prompts (<code>prompts.py</code>)</a></li>
+                <li><a href="#nodes">Nodes, checks and severity (<code>nodes.py</code>)</a></li>
+                <li><a href="#workflow">Graph and routing (<code>workflow.py</code>)</a></li>
+                <li><a href="#main">FastAPI and SSE (<code>main.py</code>)</a></li>
+                <li><a href="#test">Tests and fixtures</a></li>
+                <li><a href="#cli">CLI runners</a></li>
+                <li><a href="#frontend">Frontend in detail</a></li>
+                <li><a href="#estendere">Extending the system: three recipes</a></li>
+                <li><a href="#errori">Error handling</a></li>
+                <li><a href="#aws">AWS mapping</a></li>
+                <li><a href="#glossario">Glossary</a></li>
+                <li><a href="#faq">Troubleshooting</a></li>
+            </ol>
+        </nav>
+
+        <section class="card" id="metodo">
+            <h2><span class="step-n">1</span>How to study this manual</h2>
+            <p>Suggested order, from data to flow to surroundings:</p>
+            <ol>
+                <li>Sections 2–4: what the system does and which example to reason about.</li>
+                <li>Sections 6–8: the data (schemas, state) and how it enters (PDF, provider).</li>
+                <li>Sections 9–11: prompts and prompt engineering, then nodes and graph.</li>
+                <li>Sections 12–14: API, streaming, tests, CLI.</li>
+                <li>Sections 15–17: frontend, extensions, errors.</li>
+            </ol>
+            <div class="callout"><strong>Prerequisites.</strong> Python 3.11+, basic FastAPI and Pydantic, an idea of what an LLM with structured output is. LangGraph is explained in section 13.</div>
+        </section>
+
+        <section class="card" id="problema">
+            <h2><span class="step-n">2</span>The problem and the core idea</h2>
+            <p>A company receives invoices that should comply with a framework contract (MSA): maximum rates per service, payment terms, adjustment rules. Manual verification is slow and sample-based; deviations: rates above the cap, wrong line totals, inconsistent subtotals, stricter terms, become overbilling paid by mistake.</p>
+            <p>The core idea of the project is the <strong>separation of concerns</strong>:</p>
+            <ul>
+                <li><strong>The LLM does what it is good at:</strong> reading unstructured text (PDFs) and returning it in structured form (JSON conforming to a schema).</li>
+                <li><strong>Python does what it is good at:</strong> multiplications, sums and comparisons to the cent, with no hallucinations.</li>
+                <li><strong>The LLM comes back into play</strong> only for the interpretive part: is a numeric discrepancy covered by some clause (e.g. a notified ISTAT adjustment) or is it a violation?</li>
+            </ul>
+            <div class="callout"><strong>Golden rule.</strong> Never ask the LLM to compute. It extracts, Python verifies, the LLM interprets. Every architectural choice in the project follows from this rule.</div>
+        </section>
+
+        <section class="card" id="setup">
+            <h2><span class="step-n">3</span>Setup and configuration</h2>
+            <p class="file">backend/requirements.txt · backend/.env.example</p>
+<pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+cp backend/.env.example backend/.env
+
+cd backend
+python -m uvicorn main:app --reload --port 8000</code></pre>
+            <h3>Environment variables</h3>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Variable</th><th>Effect</th></tr></thead>
+                    <tbody>
+                        <tr><td>GEMINI_API_KEY</td><td>If missing or placeholder, the system uses MockLLMProvider (offline zero-cost mode)</td></tr>
+                        <tr><td>GEMINI_MODEL</td><td>Gemini model (default gemini-2.5-flash)</td></tr>
+                        <tr><td>LANGCHAIN_TRACING_V2 / LANGCHAIN_API_KEY / LANGCHAIN_PROJECT</td><td>Enable LangSmith tracing, with no code changes</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>Main dependencies: <code>fastapi</code> + <code>uvicorn</code> (API), <code>langgraph</code> (orchestration), <code>google-genai</code> (direct Gemini SDK, no LangChain), <code>pydantic</code> (schemas), <code>pdfplumber</code> (PDF), <code>python-multipart</code> (uploads), <code>python-dotenv</code> (env).</p>
+        </section>
+
+        <section class="card" id="esempio">
+            <h2><span class="step-n">4</span>Worked example: invoice INV-2024-1042</h2>
+            <p>The whole manual reasons about a single case, the test fixtures (<code>backend/tests/fixtures/</code>). Invoice <code>INV-2024-1042</code> from TechConsult S.r.l. against contract <code>MSA-2023-ACME-001</code>. Keep these numbers in mind: every section refers back to them.</p>
+            <h3>Invoice lines vs caps</h3>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Item</th><th>Qty × price</th><th>Stated total</th><th>Contract cap</th><th>Outcome</th></tr></thead>
+                    <tbody>
+                        <tr><td>Consulenza Senior</td><td>10 × 600.00 = 6,000.00</td><td>6,000.00</td><td>500.00</td><td>Rate above cap: (600 − 500) × 10 = 1,000.00</td></tr>
+                        <tr><td>Sviluppo Software</td><td>15 × 450.00 = 6,750.00</td><td>6,750.00</td><td>450.00</td><td>Compliant</td></tr>
+                        <tr><td>Project Management</td><td>5 × 550.00 = 2,750.00</td><td>2,750.00</td><td>550.00</td><td>Compliant</td></tr>
+                        <tr><td>Formazione Team</td><td>3 × 400.00 = 1,200.00</td><td>1,250.00</td><td>400.00 (mock)</td><td>Line error: +50.00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Totals and terms</h3>
+            <ul>
+                <li>Sum of stated lines: 6,000 + 6,750 + 2,750 + 1,250 = <strong>16,750.00</strong>; stated subtotal <strong>16,800.00</strong> → subtotal discrepancy <strong>+50.00</strong>.</li>
+                <li>Total: 16,800 + 3,696 (VAT) = 20,496 = stated total → <strong>no total discrepancy</strong> (the subtotal error propagates consistently: a good example of why separate checks are needed).</li>
+                <li>Payment: invoice 30 days vs 60 under contract → terms discrepancy, with no monetary delta.</li>
+                <li>Recoverable total: 1,000 + 50 + 50 = <strong>1,100.00</strong> plus VAT.</li>
+            </ul>
+            <div class="callout"><strong>The 4 expected discrepancies.</strong> <code>unit_price:Consulenza Senior</code> (1,000, high severity), <code>line_total:Formazione Team</code> (50, low), <code>subtotal</code> (50, low), <code>payment_terms_days</code> (no delta, medium). The Mock returns all of them as UNJUSTIFIED.</div>
+        </section>
+
+        <section class="card" id="moduli">
+            <h2><span class="step-n">5</span>Module map</h2>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>File</th><th>Responsibility</th></tr></thead>
+                    <tbody>
+                        <tr><td>backend/main.py</td><td>FastAPI: batch endpoint, SSE streaming, demo fixtures, static mount</td></tr>
+                        <tr><td>backend/run_live_stream.py</td><td>CLI showing node-by-node execution in the terminal</td></tr>
+                        <tr><td>backend/models/schemas.py</td><td>Pydantic schemas: Invoice, ContractTerms, Discrepancy, FinalReport</td></tr>
+                        <tr><td>backend/graph/state.py</td><td>GraphState: TypedDict with partial updates</td></tr>
+                        <tr><td>backend/graph/prompts.py</td><td>System prompts of the LLM nodes</td></tr>
+                        <tr><td>backend/graph/nodes.py</td><td>The 6 executable nodes</td></tr>
+                        <tr><td>backend/graph/workflow.py</td><td>StateGraph compilation and conditional routing</td></tr>
+                        <tr><td>backend/services/llm_provider.py</td><td>BaseLLMProvider, GeminiProvider, env-based factory</td></tr>
+                        <tr><td>backend/services/mock_provider.py</td><td>Deterministic mock for tests and offline demos</td></tr>
+                        <tr><td>backend/services/pdf_parser.py</td><td>In-memory PDF text extraction</td></tr>
+                        <tr><td>backend/tests/</td><td>4 test files, PDF fixture generator, CLI demo</td></tr>
+                        <tr><td>frontend/</td><td>index.html, css/style.css, js/app.js</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card" id="schemas">
+            <h2><span class="step-n">6</span>Pydantic models</h2>
+            <p class="file">backend/models/schemas.py: 8 models</p>
+            <p>Pydantic validates at runtime: if the LLM returns a wrongly typed field, validation fails instead of propagating dirty data. The constraints used here are <code>Literal</code> (allowed values), defaults, <code>default_factory</code> and a cross-field <code>model_validator</code>.</p>
+            <h3>Why descriptions matter</h3>
+            <p>Every <code>Field(description="...")</code> ends up in the JSON Schema sent to the LLM as <code>response_schema</code>. Example of how the model sees the severity field:</p>
+<pre><code>{
+  "severity": {
+    "type": "string",
+    "enum": ["low", "medium", "high"],
+    "description": "'low' = &lt;5% o &lt;500EUR; ..."
+  }
+}</code></pre>
+            <p>The description is both developer documentation and model instruction: writing good descriptions is the main form of prompt engineering in this project.</p>
+            <h3>The models in brief</h3>
+            <ul>
+                <li><code>InvoiceLine</code>: description, quantity, unit_price, total_price.</li>
+                <li><code>Invoice</code>: header (id, vendor, client, dates, currency), <code>lines</code>, subtotal, tax rate/amount, total, payment terms, notes.</li>
+                <li><code>ContractPricingRule</code>: service_type, max_unit_price, unit, notes.</li>
+                <li><code>ContractTerms</code>: validity, payment terms, pricing rules, adjustment flag and rules, penalties, governing law.</li>
+                <li><code>Discrepancy</code>: field_name, invoice_value, expected_value, delta, severity, is_justified_by_contract, reasoning.</li>
+                <li><code>FinalReport</code>: status, invoice/contract ids, summary, discrepancies, total_overbilling, dispute_email_draft.</li>
+                <li><code>DiscrepancyReasoning</code> / <code>ContractReasoningOutput</code>: intermediate reasoning-node schemas (JUSTIFIED/UNJUSTIFIED verdict per field).</li>
+                <li><code>DisputeEmailDraft</code>: subject + body of the draft.</li>
+            </ul>
+            <h3>The consistency validator</h3>
+<pre><code>@model_validator(mode="after")
+def validate_consistency(self) -> FinalReport:
+    if self.status == "DISCREPANCIES_FOUND" and not self.discrepancies:
+        raise ValueError("DISCREPANCIES_FOUND richiede almeno una discrepanza.")
+    if self.status == "APPROVED" and self.discrepancies:
+        raise ValueError("APPROVED non puo contenere discrepanze.")</code></pre>
+            <p><code>mode="after"</code> means: run after single-field validation, when the object is complete. It prevents building logically contradictory reports, regardless of which node produced them. (String literals are shown verbatim as in the source.)</p>
+        </section>
+
+        <section class="card" id="state">
+            <h2><span class="step-n">7</span>Graph state</h2>
+            <p class="file">backend/graph/state.py</p>
+            <p>LangGraph circulates a shared dictionary between nodes. <code>TypedDict(total=False)</code> makes all keys optional: each node returns only the delta (the keys it updates) and LangGraph merges it into the global state. At runtime it is a plain dict; the types serve the IDE and the type checker.</p>
+<pre><code>class GraphState(TypedDict, total=False):
+    invoice_pdf_bytes: bytes
+    contract_pdf_bytes: bytes
+    raw_invoice_text: str
+    raw_contract_text: str
+    parsed_invoice: Invoice | None
+    parsed_contract: ContractTerms | None
+    invoice_extraction_error: str | None
+    contract_extraction_error: str | None
+    raw_discrepancies: list[Discrepancy]
+    analyzed_discrepancies: list[Discrepancy]
+    final_report: FinalReport | None</code></pre>
+            <p>Read the fields in write order: input bytes → raw texts → parsed objects (or errors) → raw discrepancies → analyzed discrepancies → report. That is the execution timeline.</p>
+        </section>
+
+        <section class="card" id="pdf">
+            <h2><span class="step-n">8</span>PDF parser</h2>
+            <p class="file">backend/services/pdf_parser.py: <code>extract_text_from_pdf(pdf_bytes, label)</code></p>
+            <p>Three decisions in one function: no disk (<code>io.BytesIO</code> wraps the bytes and exposes a file-like interface to pdfplumber), spatial tolerances (<code>x_tolerance=3, y_tolerance=3</code>) to keep table words and cells together, <code>--- Pagina N ---</code> separators so the LLM knows where it is. (Page markers use the source language.)</p>
+<pre><code>with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+    for i, page in enumerate(pdf.pages, 1):
+        text = page.extract_text(x_tolerance=3, y_tolerance=3)
+        if text:
+            pages.append(f"--- Pagina {i} ---\n{text.strip()}")</code></pre>
+            <p>Image-only pages (scans) produce warnings and, if no page has extractable text, <code>ValueError</code>: the system rejects non-OCRed scans instead of inventing data. Empty bytes are rejected immediately. This is the privacy layer: PDFs live only in RAM and memory is released at the end of the response.</p>
+        </section>
+
+        <section class="card" id="provider">
+            <h2><span class="step-n">9</span>LLM provider</h2>
+            <p class="file">backend/services/llm_provider.py</p>
+            <h3>The interface</h3>
+<pre><code>class BaseLLMProvider(ABC):
+    @abstractmethod
+    async def structured_completion(
+        self, system_prompt: str, user_message: str, output_schema: type[T]
+    ) -> T: ...</code></pre>
+            <p>An abstract class with a single method: given a prompt and a Pydantic schema, return a validated instance of that schema. Nodes only know this interface: no SDK imports in the nodes, no vendor references.</p>
+            <h3>The Gemini implementation</h3>
+<pre><code>response = await self._client.aio.models.generate_content(
+    model=self._model,
+    contents=f"{system_prompt}\n\n{user_message}",
+    config={
+        "response_mime_type": "application/json",
+        "response_schema": output_schema,
+        "temperature": 0.1,
+    },
+)
+result = response.parsed  # Pydantic instance already validated by the SDK</code></pre>
+            <p>Note: no manual JSON parsing and no LangChain in between: the <code>google-genai</code> SDK constrains the output to the schema and returns it in <code>response.parsed</code>. If it is <code>None</code>, explicit error. Temperature 0.1 for stable, analytical output. Network/SDK errors are wrapped in <code>LLMProviderError</code> with chaining (<code>raise ... from e</code>).</p>
+            <h3>The factory</h3>
+            <p><code>create_llm_provider()</code> reloads <code>.env</code> on every call (key changes without restart), returns <code>GeminiProvider</code> when the key is real, otherwise <code>MockLLMProvider</code> with a warning. In the nodes, <code>_get_llm()</code> prefers the test-injected provider via <code>set_llm_provider()</code>.</p>
+        </section>
+
+        <section class="card" id="mock">
+            <h2><span class="step-n">10</span>Mock provider</h2>
+            <p class="file">backend/services/mock_provider.py</p>
+            <p>Selects the response by <code>output_schema</code> and returns the fixed objects of the worked example: invoice with the 4 known lines, contract with rules and ISTAT adjustments, 4 UNJUSTIFIED reasonings, complete email draft. With <code>should_fail=True</code> it always raises <code>LLMProviderError</code>.</p>
+            <p>Its purpose: keyless, network-free tests and CI, offline demos, and, the important teaching point, it makes tests <strong>deterministic</strong>: same input, same output, always. A test depending on a live LLM is not a test, it is a lottery.</p>
+        </section>
+
+        <section class="card" id="prompts">
+            <h2><span class="step-n">11</span>Prompts</h2>
+            <p class="file">backend/graph/prompts.py: 4 system prompts (Italian source text, shown here translated)</p>
+            <ul>
+                <li><code>EXTRACT_INVOICE_SYSTEM</code>: extract every line, YYYY-MM-DD dates, ISO 4217 currency, exact values, <strong>do not compute or infer</strong>.</li>
+                <li><code>EXTRACT_CONTRACT_SYSTEM</code>: all pricing rules, cap as maximum (not discounts), ISTAT flag with conditions, payments in days, null when absent.</li>
+                <li><code>LLM_REASONING_SYSTEM</code>: per discrepancy, JUSTIFIED only with an explicit clause, otherwise UNJUSTIFIED; conservative on doubt; <code>field_name</code> identical to the input (the merge in node 5 relies on this equality).</li>
+                <li><code>GENERATE_DISPUTE_EMAIL_SYSTEM</code>: short subject, assertive non-aggressive tone, list of anomalies, total, credit note within 15 days, contract reference.</li>
+            </ul>
+            <div class="callout"><strong>Critical detail.</strong> The "identical field_name" rule is not cosmetic: <code>llm_contract_reasoning</code> joins verdicts and discrepancies through a <code>field_name</code> map. If the LLM altered it, the verdict would be lost and the discrepancy would stay unjustified by default (conservative fallback).</div>
+        </section>
+
+        <section class="card" id="nodes">
+            <h2><span class="step-n">12</span>Nodes, checks and severity</h2>
+            <p class="file">backend/graph/nodes.py: 6 sync/async functions</p>
+            <h3>parse_documents, extract_invoice, extract_contract</h3>
+            <p>Local parsing, then two independent LLM extractions. On <code>LLMProviderError</code> the node does not raise: it writes <code>invoice_extraction_error</code> / <code>contract_extraction_error</code> into the state and the graph continues toward a handled error report (see section 19).</p>
+            <h3>deterministic_match: the 5 checks</h3>
+            <ol>
+                <li><strong>Line:</strong> <code>round(qty × unit_price, 2)</code> vs <code>total_price</code>, tolerance 0.01. Example: 3 × 400 = 1,200 vs 1,250 → delta +50.</li>
+                <li><strong>Subtotal:</strong> sum of line totals vs subtotal. Example: 16,750 vs 16,800 → +50.</li>
+                <li><strong>Total:</strong> subtotal + VAT vs total (only when <code>tax_amount</code> is present). Does not trigger in the example.</li>
+                <li><strong>Rates:</strong> per line, find the rule with affinity ≥ 0.4 and compare <code>unit_price &gt; max_unit_price</code>. Example: 600 &gt; 500 → overcharge (600 − 500) × 10 = 1,000.</li>
+                <li><strong>Terms:</strong> invoice days below contract days. Example: 30 &lt; 60, delta None, fixed medium severity.</li>
+            </ol>
+            <h3>How line-to-rule matching works</h3>
+<pre><code>def _match_service_score(invoice_desc, contract_service):
+    a, b = normalized strings
+    if a == b: return 1.0
+    if b in a or a in b: return 0.8
+    return |shared words| / max(|words a|, |words b|)</code></pre>
+            <p>Three levels: equality, containment, lexical overlap (Jaccard over the maximum, stricter than the average). Hypothetical example: "Consulenza Junior" vs "Consulenza Senior" → words {consulenza, junior} and {consulenza, senior} → 1/2 = 0.5, above the 0.4 threshold: match. The threshold trades tolerance for label variants against false positives.</p>
+            <h3>Severity</h3>
+<pre><code>high:   delta &gt; 2000 EUR or deviation &gt; 15%
+medium: delta &gt; 500 EUR or deviation &gt; 5%
+low:    the rest</code></pre>
+            <p>Check on the example: rate 1,000 over reference 500 → 200% → high; line 50 over 1,200 → 4.2% → low; subtotal 50 over 16,750 → 0.3% → low; terms → fixed medium. The percentage reference is the comparison amount (cap, expected total), not the invoice total.</p>
+            <h3>llm_contract_reasoning and generate_dispute_report</h3>
+            <p>Reasoning sends discrepancies + serialized contract (<code>model_dump_json</code>) and merges verdicts with <code>model_copy(update=...)</code>: original objects are never mutated. On LLM error, conservative fallback (everything stays unjustified). The report sums only positive unjustified deltas (1,000 + 50 + 50 = 1,100; terms have no delta) and calls the LLM for the email only when there are disputes, otherwise <code>dispute_email_draft</code> stays None.</p>
+        </section>
+
+        <section class="card" id="workflow">
+            <h2><span class="step-n">13</span>Graph and routing</h2>
+            <p class="file">backend/graph/workflow.py</p>
+            <p>LangGraph models the flow as a state machine: registered nodes, fixed edges, one conditional edge. <code>build_workflow()</code> compiles once at startup; the compiled object exposes <code>ainvoke</code> (batch: waits for completion) and <code>astream(stream_mode="updates")</code> (one chunk per completed node, used by SSE streaming).</p>
+<pre><code>graph.set_entry_point("parse_documents")
+graph.add_edge("parse_documents", "extract_invoice")
+graph.add_edge("extract_invoice", "extract_contract")
+graph.add_edge("extract_contract", "deterministic_match")
+graph.add_conditional_edges("deterministic_match", _route_after_match, {
+    "llm_contract_reasoning": "llm_contract_reasoning",
+    "generate_dispute_report": "generate_dispute_report",
+})
+graph.add_edge("llm_contract_reasoning", "generate_dispute_report")
+graph.add_edge("generate_dispute_report", END)</code></pre>
+            <p>The router is a pure function of the state: if <code>raw_discrepancies</code> is non-empty → reasoning, otherwise straight to the report. A compliant invoice costs zero reasoning tokens. Teaching note: the two LLM extractions are sequential in the graph; parallelizing them is a possible optimization (they are independent), at the cost of more complex error handling.</p>
+        </section>
+
+        <section class="card" id="main">
+            <h2><span class="step-n">14</span>FastAPI and SSE</h2>
+            <p class="file">backend/main.py</p>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Endpoint</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td>GET /health</td><td>Health probe</td></tr>
+                        <tr><td>POST /analyze</td><td>Batch execution, returns FinalReport JSON</td></tr>
+                        <tr><td>POST /analyze/stream</td><td>SSE streaming: init, one event per node, complete or error</td></tr>
+                        <tr><td>GET /demo-fixtures/status</td><td>Fixture status and LLM mode (live_gemini or zero_cost_demo)</td></tr>
+                        <tr><td>GET /demo-fixtures/invoice</td><td>Test invoice PDF</td></tr>
+                        <tr><td>GET /demo-fixtures/contract</td><td>Test contract PDF</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>The SSE protocol</h3>
+            <p><code>/analyze/stream</code> returns a <code>StreamingResponse</code> with an async generator: each <code>yield "data: {...}\n\n"</code> flushes to the browser without waiting for the graph to finish. Typical sequence:</p>
+<pre><code>data: {"type": "init", "message": "Avvio analisi..."}
+data: {"type": "node_update", "node": "parse_documents", "elapsed": 0.03, "summary": "PDF estratti: ..."}
+data: {"type": "node_update", "node": "extract_invoice", ...}
+...
+data: {"type": "complete", "report": {...}, "elapsed": 32.5}</code></pre>
+            <p>(Init message and summaries use the source language.) The per-node summary is built server-side by inspecting the state delta (same logic as the CLI). Upload errors: 400 for non-PDF content type or empty file. Workflow errors: 500. Missing fixtures are regenerated on the fly by <code>generate_test_pdfs</code>. The frontend is served at <code>/</code>, this guide at <code>/docs</code>.</p>
+        </section>
+
+        <section class="card" id="test">
+            <h2><span class="step-n">15</span>Tests and fixtures</h2>
+            <p class="file">backend/tests/: run: <code>PYTHONPATH=backend pytest -v backend/tests/</code></p>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>File</th><th>Coverage</th></tr></thead>
+                    <tbody>
+                        <tr><td>test_pdf_parser.py</td><td>Invoice/contract text extraction, empty-bytes rejection</td></tr>
+                        <tr><td>test_deterministic_match.py</td><td>4 expected discrepancies with exact deltas, compliant invoice at zero, empty state</td></tr>
+                        <tr><td>test_workflow.py</td><td>End-to-end with Mock, conditional routing, LLM error</td></tr>
+                        <tr><td>test_api.py</td><td>Health, non-PDF and empty-file rejection, E2E /analyze, demo fixtures</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Strategy: why these tests work</h3>
+            <ul>
+                <li><strong>Fixtures with known anomalies</strong> (<code>generate_test_pdfs.py</code>, fpdf2): the PDFs are not random, they contain exactly the 4 discrepancies of section 4. If the system finds 3 or 5, something broke.</li>
+                <li><strong>Deterministic mock:</strong> workflow and API tests inject <code>MockLLMProvider</code> via <code>set_llm_provider()</code> and reset it after each test (autouse fixture). No network, no keys, sub-second runs.</li>
+                <li><strong>Three levels:</strong> unit (parser, match), integration (graph), API (in-process TestClient, no real sockets).</li>
+                <li><strong>Assertions on numbers, not words:</strong> <code>delta == 1000.0</code>, <code>total_overbilling &gt;= 1000.0</code>. LLM texts are never asserted literally (fragile even with the Mock, impossible with a live model).</li>
+            </ul>
+        </section>
+
+        <section class="card" id="cli">
+            <h2><span class="step-n">16</span>CLI runners</h2>
+            <p class="file">backend/run_live_stream.py · backend/tests/run_demo.py</p>
+            <p><code>run_live_stream.py</code> consumes <code>workflow.astream(stream_mode="updates")</code> and prints one line per node with timing and summary: the same data source as SSE, useful for debugging without a browser. <code>run_demo.py</code> runs <code>ainvoke</code> and prints the report, discrepancies and email draft. Both regenerate missing fixtures and fall back to the Mock without a Gemini key. Note: <code>run_demo.py</code> imports the Mock from <code>services.mock_provider</code> (direct import, not via other modules).</p>
+        </section>
+
+        <section class="card" id="frontend">
+            <h2><span class="step-n">17</span>Frontend in detail</h2>
+            <p class="file">frontend/index.html · frontend/css/style.css · frontend/js/app.js</p>
+            <h3>Page structure</h3>
+            <ul>
+                <li><strong>Topbar:</strong> brand, API status badge (<code>/health</code>), LLM mode badge (<code>/demo-fixtures/status</code>), link to this guide.</li>
+                <li><strong>Section 1, input:</strong> two PDF dropzones (click, keyboard, drag and drop) with PDF validation and a 10 MB limit, name/size preview, removal, demo and start buttons (start enabled only with both files).</li>
+                <li><strong>Section 2, progress:</strong> 5-step stepper (parsing, extraction, comparison, evaluation, report) plus SSE log with timer.</li>
+                <li><strong>Section 3, results:</strong> outcome banner, KPIs (contestable amount, invoice/contract ids, count, duration), discrepancy table with severity filters, email draft with clipboard copy, new-analysis button.</li>
+            </ul>
+            <h3>Client state machine</h3>
+            <p><code>startAnalysis()</code> follows a fixed cycle: validate → freeze buttons → show stepper and clear log → open <code>fetch("/analyze/stream")</code> → read the reader chunk by chunk, accumulate the buffer, split on <code>\n\n</code>, parse each <code>data:</code> line → update stepper (<code>nodeToStep</code>) and log → on <code>complete</code> store the report → hide the stepper and render. Network errors or <code>error</code> events show a toast and restore the buttons. The node-to-step mapping compresses both extractions into a single "data extraction" step.</p>
+            <h3>Style</h3>
+            <p>Light theme with tokens shared with this guide (<code>--bg</code>, <code>--surface</code>, <code>--accent</code>, system fonts). No external dependencies: one HTML, one CSS, one vanilla JS file. (The UI itself is in Italian.)</p>
+        </section>
+
+        <section class="card" id="estendere">
+            <h2><span class="step-n">18</span>Extending the system: three recipes</h2>
+            <h3>A. Add a deterministic check</h3>
+            <p>Open <code>deterministic_match</code> in <code>nodes.py</code> and append a <code>Discrepancy</code> with a unique <code>field_name</code> (it becomes the key for reasoning and tests). Skeleton:</p>
+<pre><code>if invoice.due_date is not None and ...:
+    discrepancies.append(Discrepancy(
+        field_name="due_date",
+        invoice_value=...,
+        expected_value=...,
+        delta=None,
+        severity="low",
+        is_justified_by_contract=False,
+        reasoning="...",
+    ))</code></pre>
+            <p>Then add the case in <code>test_deterministic_match.py</code> and, if needed, the expected verdict in the Mock.</p>
+            <h3>B. Add an LLM provider</h3>
+            <ol>
+                <li>Create a <code>BaseLLMProvider</code> subclass implementing <code>structured_completion</code> (API call + <code>output_schema</code> validation).</li>
+                <li>Add the branch in <code>create_llm_provider()</code> driven by a new environment variable.</li>
+                <li>Verify with the existing suite: tests use the Mock and must stay green untouched.</li>
+            </ol>
+            <h3>C. Add an endpoint</h3>
+            <p>Follow the <code>/analyze</code> pattern: validate the upload with <code>_read_pdf_upload</code>, invoke the workflow, handle 400/500. For progressive output, copy the <code>/analyze/stream</code> generator and add the event types the client needs.</p>
+        </section>
+
+        <section class="card" id="errori">
+            <h2><span class="step-n">19</span>Error handling</h2>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Failure</th><th>Where</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td>Non-PDF / empty file</td><td>main._read_pdf_upload</td><td>HTTP 400 with detail</td></tr>
+                        <tr><td>Textless PDF (scan)</td><td>pdf_parser</td><td>ValueError → 500 via workflow, explicit message</td></tr>
+                        <tr><td>LLM extraction failed</td><td>extract_*</td><td>Error in state, graph does not collapse</td></tr>
+                        <tr><td>LLM reasoning failed</td><td>llm_contract_reasoning</td><td>Fallback: discrepancies stay unjustified</td></tr>
+                        <tr><td>LLM email failed</td><td>generate_dispute_report</td><td>Placeholder text, report still valid</td></tr>
+                        <tr><td>Upstream extraction failed</td><td>generate_dispute_report</td><td>APPROVED report with "Analisi incompleta..." summary and zero discrepancies</td></tr>
+                        <tr><td>Missing report in stream</td><td>analyze_stream</td><td>Error event to the client</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="callout warn"><strong>Design choice.</strong> On failed extraction the report is APPROVED with zero discrepancies: the validator requires it. The summary explains the incompleteness, but a consumer looking only at <code>status</code> could misunderstand. When integrating via API, always check <code>analysis_summary</code>.</div>
+        </section>
+
+        <section class="card" id="aws">
+            <h2><span class="step-n">20</span>AWS mapping</h2>
+            <p>The code is designed for low-coupling migration: the cut points are already the module boundaries.</p>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Local (this repo)</th><th>AWS target</th><th>Cut point</th></tr></thead>
+                    <tbody>
+                        <tr><td>FastAPI + Uvicorn</td><td>API Gateway + Lambda/ECS</td><td>main.py: handlers stay, runtime changes</td></tr>
+                        <tr><td>Gemini / Mock</td><td>Bedrock</td><td>New BaseLLMProvider subclass</td></tr>
+                        <tr><td>BytesIO in RAM</td><td>S3 with short-lived lifecycle</td><td>pdf_parser + state: bytes from S3 instead of upload</td></tr>
+                        <tr><td>Console logs</td><td>DynamoDB audit trail, CloudWatch</td><td>Structured node logging</td></tr>
+                        <tr><td>Email text</td><td>SES for actual delivery</td><td>generate_dispute_report: delivery instead of draft</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card" id="glossario">
+            <h2><span class="step-n">21</span>Glossary</h2>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                        <tr><td>MSA</td><td>Master Services Agreement: the framework contract with rates and conditions</td></tr>
+                        <tr><td>Structured output</td><td>LLM output constrained to a schema (here Pydantic via response_schema)</td></tr>
+                        <tr><td>GraphState</td><td>Shared dictionary flowing through the graph nodes</td></tr>
+                        <tr><td>Conditional edge</td><td>Graph branch decided by a function of the state</td></tr>
+                        <tr><td>SSE</td><td>Server-Sent Events: unidirectional server → browser HTTP stream</td></tr>
+                        <tr><td>Severity</td><td>low/medium/high from absolute-delta and percentage thresholds</td></tr>
+                        <tr><td>Mock provider</td><td>Fake deterministic implementation of the LLM interface for tests/demos</td></tr>
+                        <tr><td>Graceful degradation</td><td>On error, explicit partial result instead of crash</td></tr>
+                        <tr><td>model_validator</td><td>Pydantic multi-field validation after single-field validation</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card" id="faq">
+            <h2><span class="step-n">22</span>Troubleshooting</h2>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Symptom</th><th>Likely cause and fix</th></tr></thead>
+                    <tbody>
+                        <tr><td>System always uses the Mock</td><td>Missing or placeholder key in backend/.env; check llm_mode at /demo-fixtures/status</td></tr>
+                        <tr><td>400 "deve essere un PDF"</td><td>Non-application/pdf content type; the frontend only accepts .pdf (server message in Italian)</td></tr>
+                        <tr><td>"Nessun testo estraibile"</td><td>Scanned PDF without OCR; a PDF with selectable text is required (server message in Italian)</td></tr>
+                        <tr><td>Port 8000 busy</td><td>Another uvicorn running; stop it before restarting</td></tr>
+                        <tr><td>Slow tests or network errors</td><td>Live provider injected by mistake; tests must run with the Mock (autouse fixture)</td></tr>
+                        <tr><td>Unexpected APPROVED report</td><td>Read analysis_summary: likely a failed extraction, see section 19</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Revenue Leakage Defender: invoice/contract verification tool. Internal use, with mandatory human review before any dispute.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
